@@ -1,0 +1,6 @@
+@use '../../styles/fonts.scss';
+
+.keyboard-button {
+    font-size: fonts.$font-size-m;
+    min-width: 18px;
+}

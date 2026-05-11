@@ -1,0 +1,7 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.top-bar__content {
+    padding: geometry.$padding-s geometry.$padding-l;
+}

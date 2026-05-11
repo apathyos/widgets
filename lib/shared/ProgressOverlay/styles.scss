@@ -1,0 +1,24 @@
+@use 'sass:color';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.progress-overlay__content-container {
+    &_with-value * {
+        color: transparent;
+    }
+}
+
+.progress-overlay__overlay {
+    border-radius: geometry.$border-radius-m;
+    background-image: linear-gradient(
+        var(--progress-overlay-direction),
+        color.scale(colors.$bg-secondary, $alpha: geometry.$opacity-l * -100%) 0%,
+        color.scale(colors.$bg-secondary, $alpha: geometry.$opacity-l * -100%) var(--progress-overlay-value),
+        transparent var(--progress-overlay-value),
+        transparent 100%
+    );
+}
+
+.progress-overlay__value {
+    color: colors.$fg-alt;
+}

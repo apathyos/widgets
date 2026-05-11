@@ -1,0 +1,49 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/animation.scss';
+
+.toast {
+    min-height: 75px;
+    min-width: 450px;
+
+    &_expanded {
+        .toast__expand-button > label {
+            transform: rotate(0deg);
+        }
+
+        .toast-content-scroller {
+            min-height: 100px;
+        }
+    }
+}
+
+.toast__title {
+    font-size: fonts.$font-size-l;
+}
+
+.toast__summary {
+    text-decoration: underline;
+}
+
+.toast-content-scroller {
+    min-height: 15px;
+    transition: animation.$transition-fast min-height;
+}
+
+.toast__body {
+    font-size: fonts.$font-size-l;
+}
+
+.toast__button {
+    color: colors.$fg;
+    background-color: transparent;
+
+    &:hover {
+        color: colors.$fg-hover;
+    }
+}
+
+.toast__expand-button > label {
+    transform: rotate(-90deg);
+    transition: animation.$transition-fast transform;
+}

@@ -1,0 +1,10 @@
+@use '../../../styles/fonts.scss';
+@use '../../../styles/geometry.scss';
+
+.symbol-reveal-button__content-container {
+    padding: 0;
+}
+
+.symbol-reveal-button__label {
+    font-size: fonts.$font-size-m;
+}

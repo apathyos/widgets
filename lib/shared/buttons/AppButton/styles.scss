@@ -1,0 +1,10 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/animation.scss';
+
+.app-button__icon {
+    transition: transform animation.$transition-fast;
+
+    &:hover {
+        transform: scale(1.15);
+    }
+}

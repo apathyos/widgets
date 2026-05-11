@@ -1,0 +1,10 @@
+@use '../../../styles/fonts.scss';
+
+.icon-dropdown-button {
+    min-width: 200px;
+}
+
+.icon-dropdown-button__icon {
+    min-width: 27px;
+    font-size: fonts.$font-symbol-size-l;
+}

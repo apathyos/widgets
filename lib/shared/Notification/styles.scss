@@ -1,0 +1,45 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+@use '../../styles/animation.scss';
+
+.notification {
+    padding: geometry.$padding-m geometry.$padding-l;
+
+    &_expanded {
+        .notification__expand > label {
+            transform: rotate(0deg);
+        }
+    }
+}
+
+.notification__title-label {
+    font-weight: bold;
+    font-size: 105%;
+}
+
+.notification__summary-label {
+    text-decoration: underline;
+}
+
+.notification__body {
+    min-height: 20px;
+}
+
+.notification__body-label {
+    font-size: 105%;
+}
+
+.notification__button {
+    background-color: colors.$bg;
+    color: colors.$fg;
+
+    &:hover {
+        color: colors.$fg-hover;
+    }
+}
+
+.notification__expand > label {
+    transform: rotate(-90deg);
+    transition: animation.$transition-fast transform;
+}

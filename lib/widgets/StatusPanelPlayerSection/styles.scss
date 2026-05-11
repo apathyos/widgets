@@ -1,0 +1,7 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.status-panel-player-section {
+    background-color: colors.$bg-ternary;
+    padding: geometry.$padding-m geometry.$padding-m;
+}

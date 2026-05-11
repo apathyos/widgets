@@ -1,0 +1,10 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/geometry.scss';
+
+.wifi-button__name-container {
+    padding: geometry.$padding-m 0;
+}
+
+.wifi-button__name {
+    font-size: fonts.$font-size-m;
+}

@@ -1,0 +1,9 @@
+@use '../../styles/mixins.scss';
+
+.cpu-temp__icon_crit {
+    @include mixins.crit-color;
+}
+
+.cpu-temp__icon_warn {
+    @include mixins.warn-color;
+}

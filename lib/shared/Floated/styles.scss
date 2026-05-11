@@ -1,0 +1,32 @@
+@use '../../styles/colors.scss';
+
+.floated__arrow {
+    &_placement-bottom {
+        transform: rotate(180deg);
+    }
+
+    &_placement-left {
+        transform: rotate(-90deg);
+    }
+
+    &_placement-right {
+        transform: rotate(90deg);
+    }
+}
+
+.floated__arrow_bottom {
+    min-width: 0;
+    min-height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid colors.$border;
+}
+
+.floated__arrow_top {
+    min-width: 0;
+    min-height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 9px solid colors.$bg;
+    margin-top: -1px;
+}

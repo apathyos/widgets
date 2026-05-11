@@ -1,0 +1,16 @@
+@use '../../styles/colors.scss';
+@use '../../styles/fonts.scss';
+
+.tray-selector__button {
+    background-color: transparent;
+    color: colors.$fg-secondary;
+    font-size: fonts.$font-symbol-size-l;
+
+    &:hover {
+        color: colors.$fg-hover;
+    }
+}
+
+.tray-selector__button_active {
+    color: colors.$fg;
+}

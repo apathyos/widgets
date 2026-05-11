@@ -1,0 +1,17 @@
+@use '../../../styles/fonts.scss';
+@use '../../../styles/colors.scss';
+@use '../../../styles/geometry.scss';
+@use '../../../styles/animation.scss';
+
+.symbol-button {
+    color: colors.$fg-alt;
+    font-size: fonts.$font-symbol-size-m;
+    background-color: colors.$bg-alt;
+    padding: 0 geometry.$padding-s;
+    border-radius: geometry.$border-radius-m;
+    transition: animation.$transition-fast color;
+
+    &:hover {
+        color: colors.$fg-alt-hover;
+    }
+}

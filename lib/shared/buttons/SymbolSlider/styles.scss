@@ -1,0 +1,10 @@
+@use '../../../styles/colors.scss';
+
+.symbol-slider__icon {
+    background-color: transparent;
+    color: colors.$fg;
+
+    &:hover {
+        color: colors.$fg-hover;
+    }
+}

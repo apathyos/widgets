@@ -1,0 +1,28 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.slider {
+    min-width: geometry.$size-l;
+}
+
+.slider trough {
+    background-color: colors.$bg;
+}
+
+.slider trough slider,
+.slider trough slider:hover,
+.slider trough slider:active {
+    background-color: colors.$bg-alt;
+    border: 2px solid colors.$bg;
+    background-image: none;
+    box-shadow: none;
+    min-height: 12px;
+    min-width: 12px;
+}
+
+.slider trough .top {
+    background-color: colors.$bg-alt;
+    background-image: none;
+    border: 1px solid colors.$border;
+    min-height: 3px;
+}

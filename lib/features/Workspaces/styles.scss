@@ -1,0 +1,41 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+@use '../../styles/animation.scss';
+
+.workspaces__workspace {
+    font-size: 0.7em;
+    color: colors.$fg-secondary;
+    // margin: geometry.$margin-s geometry.$margin-m;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    transition: animation.$transition-fast color;
+    // color: colors.$fg-alt;
+    color: colors.$fg;
+    background-color: colors.$bg;
+
+    &:hover {
+        // color: colors.$fg-alt;
+        color: colors.$fg;
+    }
+
+    // &:not(.workspaces__workspace_empty) {
+    //     color: colors.$fg-alt;
+    // }
+
+    // &_focused {
+    //     color: colors.$fg-alt;
+    //     border-bottom-color: colors.$fg-alt;
+    // }
+
+    // &_occupied {
+    //     color: colors.$fg-alt;
+    // }
+
+    &_focused,
+    &_occupied {
+        &:hover {
+            // color: colors.$fg-alt-hover;
+            color: colors.$fg-hover;
+        }
+    }
+}

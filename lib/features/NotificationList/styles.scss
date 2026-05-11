@@ -1,0 +1,9 @@
+@use '../../styles/geometry.scss';
+
+.notification-list {
+    padding: geometry.$padding-m 0;
+}
+
+.notification-list_empty {
+    padding: 0;
+}

@@ -1,0 +1,21 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/geometry.scss';
+
+// .action-modal {
+//     min-width: 600px;
+//     min-height: 100px;
+// }
+
+.action-modal__summary {
+    font-size: fonts.$font-size-l;
+    padding: geometry.$padding-m geometry.$padding-m;
+    min-width: inherit;
+}
+
+.action-modal-buttons {
+    padding: geometry.$padding-s 0;
+}
+
+.action-modal__button {
+    min-width: geometry.$size-xl;
+}

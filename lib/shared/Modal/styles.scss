@@ -1,0 +1,35 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.modal {
+    background-color: colors.$bg;
+    border: 1px solid colors.$border;
+    border-radius: geometry.$border-radius-m;
+    padding: geometry.$padding-l geometry.$padding-l;
+}
+
+.modal-content-container {
+    min-width: inherit;
+}
+
+.modal-title-container {
+    background-color: colors.$bg-ternary;
+    border-top-left-radius: geometry.$border-radius-m;
+    border-top-right-radius: geometry.$border-radius-m;
+    padding: geometry.$padding-m;
+    margin: 0 - geometry.$padding-l;
+}
+
+.modal__title {
+    font-size: fonts.$font-size-l;
+}
+
+.modal__close {
+    background-color: transparent;
+    color: colors.$bg-alt;
+
+    &:hover {
+        color: colors.$bg-alt-hover;
+    }
+}

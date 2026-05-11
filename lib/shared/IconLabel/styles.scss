@@ -1,0 +1,10 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+
+.icon-label__icon {
+    font-size: fonts.$font-symbol-size-m;
+}
+
+.icon-label__label {
+    color: colors.$fg-alt;
+}

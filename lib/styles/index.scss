@@ -1,0 +1,12 @@
+@use './fonts.scss';
+@use './colors.scss';
+@forward '../shared/styles.scss';
+@forward '../widgets/styles.scss';
+@forward '../features/styles.scss';
+@forward '../components/styles.scss';
+
+window {
+    font-family: fonts.$font-family;
+    font-size: fonts.$font-size-m;
+    color: colors.$fg;
+}

@@ -1,0 +1,11 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.status-panel {
+    border: 3px solid colors.$border;
+    border-radius: geometry.$border-radius-l;
+}
+
+.status-panel_opened {
+    margin-right: 20px;
+}

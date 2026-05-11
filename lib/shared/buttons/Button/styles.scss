@@ -1,0 +1,15 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/geometry.scss';
+@use '../../../styles/animation.scss';
+
+.button {
+    color: colors.$fg-alt;
+    background-color: colors.$bg-alt;
+    padding: geometry.$padding-m geometry.$padding-m;
+    border-radius: geometry.$border-radius-m;
+    transition: animation.$transition-fast background-color;
+
+    &:hover {
+        background-color: colors.$bg-alt-hover;
+    }
+}

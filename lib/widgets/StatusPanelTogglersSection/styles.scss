@@ -1,0 +1,14 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.status-panel-togglers-section {
+    background-color: colors.$bg-ternary;
+    padding: geometry.$padding-m;
+}
+
+.status-panel-togglers-section__button {
+    font-size: fonts.$font-size-l;
+    min-width: 60px;
+    padding: geometry.$padding-m geometry.$padding-s;
+}

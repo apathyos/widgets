@@ -1,0 +1,8 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.date {
+    font-size: 1.2em;
+    color: colors.$fg-alt;
+    padding: 0 geometry.$padding-m;
+}

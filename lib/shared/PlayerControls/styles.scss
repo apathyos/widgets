@@ -1,0 +1,12 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+
+.player-controls__button {
+    font-size: 250%;
+    color: colors.$fg;
+    background-color: transparent;
+
+    &:hover {
+        color: colors.$fg-hover;
+    }
+}

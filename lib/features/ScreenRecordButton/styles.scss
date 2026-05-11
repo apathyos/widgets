@@ -1,0 +1,9 @@
+@use '../../styles/colors.scss';
+@use '../../styles/animation.scss';
+@use '../../styles/mixins.scss';
+
+.screen-record-button__label {
+    @include mixins.animation-breathe {
+        color: colors.$red;
+    };
+}

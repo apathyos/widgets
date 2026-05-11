@@ -1,0 +1,14 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+@use '../../styles/animation.scss';
+
+.list {
+    background-color: colors.$bg;
+    border: 1px solid colors.$border;
+    border-radius: geometry.$border-radius-m;
+}
+
+.list__item {
+    margin: geometry.$margin-s 0;
+    padding-right: geometry.$padding-l;
+}

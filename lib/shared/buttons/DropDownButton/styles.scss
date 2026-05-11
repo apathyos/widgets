@@ -1,0 +1,28 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/animation.scss';
+@use '../../../styles/geometry.scss';
+
+.dropdown-button__base-button {
+    padding: geometry.$padding-m geometry.$padding-l;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.dropdown-button {
+    &_opened {
+        .dropdown-button__icon-button-icon {
+            transform: rotate(90deg);
+        }
+    }
+}
+
+.dropdown-button__icon-button {
+    padding: geometry.$padding-m geometry.$padding-l;
+    border-left: 3px solid colors.$bg;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.dropdown-button__icon-button-icon {
+    transition: animation.$transition-fast transform;
+}

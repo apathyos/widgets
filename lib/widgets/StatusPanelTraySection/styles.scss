@@ -1,0 +1,12 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.status-panel-tray-section {
+    background-color: colors.$bg;
+    padding: 0;
+}
+
+.status-panel-tray-section__body {
+    background-color: colors.$bg;
+    padding: 0;
+}

@@ -1,0 +1,25 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/geometry.scss';
+@use '../../styles/mixins.scss';
+
+.battery-button {
+    padding-left: 0;
+}
+
+.battery-button__conservation {
+    font-size: 0.5em;
+}
+
+.battery-button__percentage {
+    font-size: 0.75em;
+    margin-bottom: - geometry.$margin-s;
+    margin-left: geometry.$margin-xs;
+}
+
+.battery-button__battery_warn {
+    @include mixins.warn-color;
+}
+
+.battery-button__battery_crit {
+    @include mixins.crit-color;
+}

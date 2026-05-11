@@ -1,0 +1,13 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.status-panel-button {
+    background-color: colors.$bg;
+    padding-left: geometry.$padding-l;
+}
+
+.status-panel-button__label {
+    color: colors.$fg;
+    font-size: fonts.$font-symbol-size-m;
+}

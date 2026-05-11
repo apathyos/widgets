@@ -1,0 +1,30 @@
+{
+    "name": "apathyos-widgets",
+    "description": "Collection of widgets for apathyos desktop environment",
+    "author": "apathoid",
+    "license": "ISC",
+    "scripts": {
+        "types": "ags types -u -d .",
+        "bundle": "scripts/bundle.sh"
+    },
+    "dependencies": {
+        "ags": "file:./vendor/dist/ags-3.1.2.tgz",
+        "gnim": "file:./vendor/dist/gnim-1.9.1.tgz",
+        "@apathoid/utils": "1.3.0",
+        "classnames": "2.5.1",
+        "lodash.merge": "4.6.2",
+        "smol-toml": "1.6.1"
+    },
+    "devDependencies": {
+        "@apathoid/eslint-config": "1.1.5",
+        "@types/lodash.merge": "4.6.9"
+    },
+    "config": {
+        "ags": {
+            "version": "3.1.2"
+        },
+        "gnim": {
+            "version": "1.9.0"
+        }
+    }
+}

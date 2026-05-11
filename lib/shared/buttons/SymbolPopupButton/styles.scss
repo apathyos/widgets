@@ -1,0 +1,16 @@
+@use '../../../styles/fonts.scss';
+@use '../../../styles/colors.scss';
+@use '../../../styles/geometry.scss';
+@use '../../../styles/animation.scss';
+
+.symbol-popup-button {
+    font-size: fonts.$font-size-l;
+    color: colors.$fg;
+    background-color: transparent;
+    padding: geometry.$padding-s;
+    transition: animation.$transition-fast color;
+
+    &:hover {
+        color: colors.$fg-hover;
+    }
+}

@@ -1,0 +1,12 @@
+@forward './NotificationAppToast/styles.scss';
+
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.notification-toast {
+    min-height: 75px;
+    min-width: 450px;
+    border: 2px solid colors.$border;
+    border-radius: geometry.$border-radius-m;
+}

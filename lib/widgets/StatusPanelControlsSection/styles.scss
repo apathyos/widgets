@@ -1,0 +1,15 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.status-panel-controls-section {
+    background-color: colors.$bg;
+    padding: geometry.$padding-m;
+}
+
+.status-panel-controls-section__button {
+    padding: geometry.$padding-m;
+    min-width: geometry.$size-m;
+    min-height: geometry.$size-s;
+    font-size: fonts.$font-size-l;
+}

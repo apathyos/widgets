@@ -1,0 +1,5 @@
+@use '../../styles/geometry.scss';
+
+.wifi-dropdown-button__item-icon {
+    min-width: geometry.$size-s;
+}

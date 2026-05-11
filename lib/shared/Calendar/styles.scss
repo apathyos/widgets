@@ -1,0 +1,53 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.calendar {
+    color: colors.$fg;
+    font-family: fonts.$font_family;
+    font-size: fonts.$font-size-l;
+    border: none;
+    border-radius: geometry.$border-radius-m;
+    background-color: colors.$bg-ternary;
+}
+
+.calendar header button,
+.calendar header label {
+    padding: geometry.$padding-m;
+    font-size: 99%;
+}
+
+.calendar header button.image-button:first-child {
+    border-top-left-radius: geometry.$border-radius-m;
+}
+
+.calendar header button.image-button:last-child {
+    border-top-right-radius: geometry.$border-radius-m;
+}
+
+.calendar grid {
+    padding: 0 geometry.$padding-m;
+}
+
+.calendar .day-number {
+    min-height: 40px;
+    min-width: 40px;
+    padding: 10px;
+    border-radius: geometry.$border-radius-m;
+}
+
+.calendar .day-number:selected {
+    background-color: colors.$bg-alt;
+    color: colors.$fg-alt;
+    border-radius: geometry.$border-radius-m;
+
+    &:not(.today) {
+        color: colors.$fg;
+        background-color: colors.$bg-secondary;
+    }
+}
+
+.calendar .day-number:focus {
+    border-color: colors.$border;
+    outline-color: colors.$border;
+}

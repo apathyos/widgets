@@ -1,0 +1,80 @@
+@use "sass:meta";
+@use "sass:map";
+
+@use './colors.scss';
+@use './geometry.scss';
+@use './animation.scss';
+
+@mixin crit-color {
+    color: colors.$red;
+}
+
+@mixin warn-color {
+    color: colors.$yellow;
+}
+
+@mixin animation-breathe() {
+    animation: animation.$transition-slow infinite alternate breathe;
+
+    @keyframes breathe {
+        100% {
+            @content
+        }
+    }
+}
+
+@mixin animation-dots-spinner($size) {
+    $animation-name: dots-flash-#{$size};
+    border-radius: 50%;
+    background-color: colors.$bg-alt;
+    animation: #{$animation-name} animation.$transition-regular ease-out infinite alternate;
+
+    $dot-size: null;
+    $spacing: null;
+
+    @if $size == "xs" {
+        $dot-size: 5px;
+        $spacing: 3px;
+    } @else if $size == "s" {
+        $dot-size: 10px;
+        $spacing: 8px;
+    }
+
+    min-width: $dot-size;
+    min-height: $dot-size;
+    box-shadow:
+        ($dot-size + $spacing) 0 colors.$bg-alt,
+        (($dot-size + $spacing) * 2) 0 colors.$bg-alt;
+
+    @keyframes #{$animation-name} {
+        0% {
+            background-color: colors.$bg-alt;
+            box-shadow:
+                ($dot-size + $spacing) 0 colors.$bg,
+                (($dot-size + $spacing) * 2) 0 colors.$bg;
+        }
+
+        50% {
+            background-color: colors.$bg;
+            box-shadow:
+                ($dot-size + $spacing) 0 colors.$bg-alt,
+                (($dot-size + $spacing) * 2) 0 colors.$bg;
+        }
+
+        100% {
+            background-color: colors.$bg;
+            box-shadow:
+                ($dot-size + $spacing) 0 colors.$bg,
+                (($dot-size + $spacing) * 2) 0 colors.$bg-alt;
+        }
+    }
+}
+
+@mixin status-panel-button() {
+    min-width: 200px;
+}
+
+@mixin status-panel-button-icon() {
+    min-width: 27px;
+    font-size: 150%;
+}

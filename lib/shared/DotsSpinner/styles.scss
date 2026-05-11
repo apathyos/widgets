@@ -1,0 +1,10 @@
+@use '../../styles/geometry.scss';
+@use '../../styles/mixins.scss';
+
+.dots-spinner.spinner_xs {
+    @include mixins.animation-dots-spinner("xs");
+}
+
+.dots-spinner.spinner_s {
+    @include mixins.animation-dots-spinner("s");
+}

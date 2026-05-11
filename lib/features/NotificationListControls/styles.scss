@@ -1,0 +1,12 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+
+.notifications-list-controls__button {
+    font-size: fonts.$font-symbol-size-l + 35%;
+    color: colors.$fg;
+    background-color: colors.$bg;
+
+    &:hover {
+        color: colors.$fg-hover;
+    }
+}
