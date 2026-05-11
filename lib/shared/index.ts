@@ -19,7 +19,6 @@ export * from './AlbumCover';
 export * from './SongMetaLabel';
 export * from './Modal';
 export * from './ActionModal';
-export * from './InputModal';
 export * from './Toast';
 export * from './NotificationToast';
 export * from './NotificationGroup';
