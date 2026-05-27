@@ -1,3 +1,4 @@
+import app from 'ags/gtk4/app';
 import { execAsync } from 'ags/process';
 import cn from 'classnames';
 import { SymbolButton } from '../../shared';
@@ -6,6 +7,8 @@ import { KeyboardLayout } from '../../types/input';
 import { IpcSocket } from '../../models/IpcSocket';
 import { handleEvent } from '../../ipc/utils';
 import { getIsKeyboardLayoutChangedIpcEvent } from '../../ipc';
+import { handleRequest } from '../../rpc/utils';
+import { getIsKeyboardLayoutCommandRequest } from '../../rpc';
 
 export interface IKeyboardButton {
     classes?: {
@@ -20,6 +23,10 @@ export function KeyboardButton(props: IKeyboardButton) {
     const { classes } = props;
 
     const [layout, setLayout] = createState(KeyboardLayout.US);
+
+    app.connect('request', handleRequest(getIsKeyboardLayoutCommandRequest, async ({ input }) => {
+        setLayout(input.keyboard.layout);
+    }));
 
     const kbLayoutListenerDispose = ipcSocket.listen(handleEvent(getIsKeyboardLayoutChangedIpcEvent, (payload) => {
         setLayout(payload.layout_short);
