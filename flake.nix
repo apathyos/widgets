@@ -164,17 +164,13 @@
             ln -s ${agsNodePackage}/node_modules/ags node_modules/ags
             ln -s ${gnimNodePackage}/node_modules/gnim node_modules/gnim
 
-            ags bundle modules/TopBarModule.tsx $out/bin/top-bar-module
-            ags bundle modules/StatusPanelModule.tsx $out/bin/status-panel-module
-            ags bundle modules/NotificationLayerModule.tsx $out/bin/notification-layer-module
+            ags bundle App.tsx $out/bin/apathyos-widgets
 
             runHook postInstall
           '';
 
           postFixup = ''
-            wrapProgram $out/bin/top-bar-module --run "${agsPkg}/bin/ags quit --instance top-bar || true"
-            wrapProgram $out/bin/status-panel-module --run "${agsPkg}/bin/ags quit --instance status-panel || true"
-            wrapProgram $out/bin/notification-layer-module --run "${agsPkg}/bin/ags quit --instance notification-layer || true"
+            wrapProgram $out/bin/apathyos-widgets --run "${agsPkg}/bin/ags quit --instance apathyos || true"
           '';
         };
 

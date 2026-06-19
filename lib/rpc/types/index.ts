@@ -11,6 +11,7 @@ import {
     SetWorkspacesCommandRequest
 } from './system';
 import { KeyboardLayoutCommandRequest } from './input';
+import { ModuleId } from '../../types/app';
 
 export enum RequestType {
     COMMAND = 'COMMAND',
@@ -18,15 +19,17 @@ export enum RequestType {
 }
 
 export type CommandRequestBase = {
+    id?: ModuleId;
     type: RequestType.COMMAND;
-    shouldNotify?: boolean;
 };
 
 export type QueryRequestBase = {
+    id?: ModuleId;
     type: RequestType.QUERY;
 };
 
 export type RequestOptions<T> = {
+    id?: ModuleId;
     modifyRequest?: (request: string[]) => string;
     respondWith?: string | ((request: T | null) => string);
 };

@@ -4,7 +4,6 @@ import { Classes } from '../../types/utils';
 import { updateAccessor } from '../../utils/misc';
 import { createEffect, createState } from 'gnim';
 import { sendRequest } from '../../rpc/utils';
-import { WindowId } from '../../types/window';
 import { getDontDisturbCommandRequest, getDontDisturbQueryRequest } from '../../rpc';
 import { DontDisturbCommandResponse, DontDisturbQueryResponse } from '../../rpc/types/notifications';
 
@@ -19,8 +18,7 @@ export function DontDisturbButton(props: IDontDisturbButton) {
 
     createEffect(async () => {
         const queryResponse = await sendRequest<DontDisturbQueryResponse>(
-            WindowId.NOTIFICATION_LAYER,
-            getDontDisturbQueryRequest()
+            getDontDisturbQueryRequest(),
         );
 
         queryResponse && setIsMuted(queryResponse.notifications.dontDisturb);
@@ -30,8 +28,7 @@ export function DontDisturbButton(props: IDontDisturbButton) {
         <SymbolButton
             onClick={async () => {
                 const queryResponse = await sendRequest<DontDisturbQueryResponse>(
-                    WindowId.NOTIFICATION_LAYER,
-                    getDontDisturbQueryRequest()
+                    getDontDisturbQueryRequest(),
                 );
 
                 if (!queryResponse) {
@@ -39,8 +36,7 @@ export function DontDisturbButton(props: IDontDisturbButton) {
                 }
 
                 const commandResponse = await sendRequest<DontDisturbCommandResponse>(
-                    WindowId.NOTIFICATION_LAYER,
-                    getDontDisturbCommandRequest(!queryResponse.notifications.dontDisturb)
+                    getDontDisturbCommandRequest(!queryResponse.notifications.dontDisturb),
                 );
 
                 if (!commandResponse) {

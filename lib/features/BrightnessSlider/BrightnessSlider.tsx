@@ -5,8 +5,8 @@ import { createEffect, createState } from 'gnim';
 import { Classes } from '../../types/utils';
 import { unpackAccessor, updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
-import { broadcastRequest, handleRequest } from '../../rpc/utils';
-import { getIsSetOutputsCommandRequest, getSetOutputsCommandRequest } from '../../rpc';
+import { handleRequest } from '../../rpc/utils';
+import { getIsSetOutputsCommandRequest } from '../../rpc';
 
 export interface IBrightnessSlider {
     classes?: Classes<'root' | 'label'>;
@@ -41,12 +41,12 @@ export function BrightnessSlider(props: IBrightnessSlider) {
             onClick={async () => {
                 display.setBrightness({ value: String(unpackAccessor(minBrightness)) });
                 setCurrentBrightness(unpackAccessor(minBrightness));
-                broadcastRequest(getSetOutputsCommandRequest(await display.getOutputsInfo()));
+                // broadcastRequest(getSetOutputsCommandRequest(await display.getOutputsInfo()));
             }}
             onChange={async ({ event: { value } }) => {
                 display.setBrightness({ value: String(unpackAccessor(value)) });
                 setCurrentBrightness(value);
-                broadcastRequest(getSetOutputsCommandRequest(await display.getOutputsInfo()));
+                // broadcastRequest(getSetOutputsCommandRequest(await display.getOutputsInfo()));
             }}
             classes={{
                 root: updateAccessor(classes?.root, (root) => cn(root, 'brightness-slider')),

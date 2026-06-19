@@ -1,6 +1,5 @@
 import app from 'ags/gtk4/app';
 import Notifd from 'gi://AstalNotifd?version=0.1';
-import { Notification } from '../../models/Notification';
 import { createComputed, createState, With } from 'gnim';
 import { NotificationToast } from '../../shared';
 import { Astal } from 'ags/gtk4';
@@ -32,8 +31,6 @@ export interface INotificationLayer {
 export function NotificationLayer(props: INotificationLayer) {
     const { classes } = props;
 
-    // const notification = new Notification(NotificationService);
-
     let notificationRef: Astal.Window | null = null;
     let timerRef: Timer | null = null;
     let shouldPop = false;
@@ -44,22 +41,10 @@ export function NotificationLayer(props: INotificationLayer) {
     const [dontDisturb, setDontDisturb] = createState(false);
     const [isHovered, setIsHovered] = createState(false);
 
-    // const canShowNotification = createComputed(get => !!(get(activeNotification) && !get(dontDisturb)));
     const canShowNotification = createComputed(get => !get(dontDisturb));
 
     const notificationVariant = createComputed(get => {
         const category = get(activeNotification)?.category;
-        // const image = get(activeNotification)?.image;
-
-        // console.log(
-        //     'image: ', image,
-        //     'sound file: ', get(activeNotification)?.soundFile,
-        //     'sound name: ', get(activeNotification)?.soundName,
-        // );
-
-        // if (image) {
-        //     return NotificationToastVariant.MULTIMEDIA;
-        // }
 
         if (category === NotificationCategory.OSD) {
             return NotificationToastVariant.OSD;
@@ -72,8 +57,6 @@ export function NotificationLayer(props: INotificationLayer) {
         if (!shouldPop || unpackAccessor(isHovered)) {
             return;
         }
-
-        // console.log('QUEUE: ', notificationsQueue);
 
         timerRef?.cancel();
         timerRef = timeout(delay, () => {
@@ -90,7 +73,6 @@ export function NotificationLayer(props: INotificationLayer) {
 
     NotificationService.connect('notified', (service, id) => {
         const activeNotif = unpackAccessor(activeNotification);
-        // const newNotification = notification.getNotifications({ withOsd: true })[0];
         const newNotification = service.get_notification(id);
 
         if (!newNotification) {

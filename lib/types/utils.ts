@@ -20,4 +20,6 @@ export type PartialSome<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 export type RequiredSome<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
+export type DistributiveOmit <T, K extends keyof T> = T extends unknown ? Omit<T, K> : never;
+
 export type UnpackAcessor<T> = T extends Accessor<infer R> ? R : T;

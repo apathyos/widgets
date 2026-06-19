@@ -4,10 +4,8 @@ import { SymbolButton } from '../../shared';
 import { Classes } from '../../types/utils';
 import cn from 'classnames';
 import { unpackAccessor, updateAccessor } from '../../utils/misc';
-import { WindowId } from '../../types/window';
 import { handleRequest, sendRequest } from '../../rpc/utils';
 import { getIsSetStatusPanelOpenedCommandRequest } from '../../rpc';
-import { SetStatusPanelIsOpenedCommandRequest } from '../../rpc/types/statusPanel';
 import { RequestType } from '../../rpc/types';
 
 export interface IStatusPanelButton {
@@ -25,19 +23,9 @@ export function StatusPanelButton(props: IStatusPanelButton) {
         handleRequest(
             getIsSetStatusPanelOpenedCommandRequest,
             async (request) => {
-                const {
-                    statusPanel: { isOpened },
-                    shouldNotify,
-                } = request;
+                const { statusPanel: { isOpened } } = request;
 
                 setIsPanelOpened(isOpened);
-
-                if (shouldNotify) {
-                    sendRequest<SetStatusPanelIsOpenedCommandRequest>(WindowId.STATUS_PANEL, {
-                        type: RequestType.COMMAND,
-                        statusPanel: { isOpened },
-                    });
-                }
             },
             { respondWith: () => String(unpackAccessor(isPanelOpened)) },
         ),
@@ -49,7 +37,7 @@ export function StatusPanelButton(props: IStatusPanelButton) {
                 const nextState = !unpackAccessor(isPanelOpened);
 
                 setIsPanelOpened(nextState);
-                sendRequest(WindowId.STATUS_PANEL, {
+                sendRequest({
                     type: RequestType.COMMAND,
                     statusPanel: { isOpened: nextState },
                 });

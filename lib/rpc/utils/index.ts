@@ -1,7 +1,9 @@
 import App from 'ags/gtk4/app';
 import { sendRequest as sendAppRequest } from 'ags/app';
 import { Request, RequestOptions } from '../types';
-import { WindowId } from '../../types/window';
+import { ModuleId } from '../../types/app';
+import { APP_ID } from '../../constants/os';
+import { DistributiveOmit } from '../../types/utils';
 
 export const getRequestData = <T extends Request>(string: string): T | null => {
     try {
@@ -20,11 +22,14 @@ export const handleRequest =
         opts?: RequestOptions<T>,
     ) =>
     async (_: typeof App, request: string[], response: (str: string) => void) => {
-        const { modifyRequest } = opts ?? {};
+        const { modifyRequest, id } = opts ?? {};
 
-        const result = getRequestData<T>((modifyRequest ? modifyRequest(request) : request[0]) || JSON.stringify(''));
+        const result = getRequestData<T>((modifyRequest
+            ? modifyRequest(request)
+            : request[0]
+        ) || JSON.stringify(''));
 
-        if (result && !test(result)) {
+        if (result && (result.id !== id || !test(result))) {
             return;
         }
 
@@ -43,11 +48,9 @@ export const handleRequest =
         response(respondWith);
     };
 
-export const sendRequest = async <R>(id: WindowId, request: Request): Promise<R | undefined> => {
+export const sendRequest = async <R>(request: DistributiveOmit<Request, 'id'>, id?: ModuleId): Promise<R | undefined> => {
     try {
-        const response = await sendAppRequest(id, JSON.stringify(request));
-        // request.id = id;
-        // const response = await sendAppRequest('apathyos', JSON.stringify(request));
+        const response = await sendAppRequest(APP_ID, JSON.stringify({ ...request, id }));
 
         return JSON.parse(response);
     } catch (e) {
@@ -55,14 +58,14 @@ export const sendRequest = async <R>(id: WindowId, request: Request): Promise<R 
     }
 };
 
-export const broadcastRequest = async (request: Request, exclude?: WindowId[]) => {
+export const broadcastRequest = async (request: DistributiveOmit<Request, 'id'>, exclude?: ModuleId[]) => {
     try {
-        const ids = Object.values(WindowId);
+        const ids = Object.values(ModuleId);
         const excludeWindowsIds = new Set(exclude);
 
         const responses = ids.filter(id => !excludeWindowsIds.has(id)).map(async (id) => {
             try {
-                const response = await sendAppRequest(id, JSON.stringify(request));
+                const response = await sendAppRequest(APP_ID, JSON.stringify({ ...request, id }));
                 return { id, response };
             } catch (error) {
                 return { id, error };

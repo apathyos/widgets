@@ -6,7 +6,6 @@ import { Gtk } from 'ags/gtk4';
 import { System } from '../../models/System';
 import { sendRequest } from '../../rpc/utils';
 import { SetStatusPanelIsOpenedCommandRequest } from '../../rpc/types/statusPanel';
-import { WindowId } from '../../types/window';
 import { RequestType } from '../../rpc/types';
 
 export interface ISystemLockButton extends Pick<IButton, 'halign' | 'hexpand'> {
@@ -19,10 +18,9 @@ export function SystemLockButton(props: ISystemLockButton) {
     const system = new System();
 
     const handleClick = async () => {
-        await sendRequest<SetStatusPanelIsOpenedCommandRequest>(WindowId.STATUS_PANEL, {
+        await sendRequest<SetStatusPanelIsOpenedCommandRequest>({
             type: RequestType.COMMAND,
             statusPanel: { isOpened: false, instant: true },
-            shouldNotify: true
         });
 
         system.lock();

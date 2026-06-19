@@ -2,8 +2,8 @@ import app from 'ags/gtk4/app';
 import Gtk from 'gi://Gtk';
 import { IPopupButton, PopupButton } from '../../shared';
 import { Classes, UnpackAcessor } from '../../types/utils';
-import { broadcastRequest, handleRequest } from '../../rpc/utils';
-import { getIsSetOutputsCommandRequest, getSetOutputsCommandRequest } from '../../rpc';
+import { handleRequest } from '../../rpc/utils';
+import { getIsSetOutputsCommandRequest } from '../../rpc';
 import { createComputed, createEffect, createState, onCleanup } from 'gnim';
 import { Output, OutputPowerMode } from '../../types/system';
 import { Display } from '../../models/Display';
@@ -62,8 +62,8 @@ export function DpmsPopupButton(props: IDpmsPopupButton) {
 
                         display.setBrightness({ value: `${value}%`, device: brightness?.device });
 
-                        const outputs = await display.getOutputsInfo();
-                        broadcastRequest(getSetOutputsCommandRequest(outputs));
+                        // const outputs = await display.getOutputsInfo();
+                        // broadcastRequest(getSetOutputsCommandRequest(outputs));
                     }}
                 >
                     {children}

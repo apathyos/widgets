@@ -6,7 +6,6 @@ import { Gtk } from 'ags/gtk4';
 import { System } from '../../models/System';
 import { sendRequest } from '../../rpc/utils';
 import { SetStatusPanelIsOpenedCommandRequest } from '../../rpc/types/statusPanel';
-import { WindowId } from '../../types/window';
 import { RequestType } from '../../rpc/types';
 import { LongClickProgressOverlay } from '../../shared/LongClickProgressOverlay';
 import { Direction } from '../../types/common';
@@ -21,10 +20,9 @@ export function SystemSuspendButton(props: ISystemSuspendButton) {
     const system = new System();
 
     const handleClick = async () => {
-        await sendRequest<SetStatusPanelIsOpenedCommandRequest>(WindowId.STATUS_PANEL, {
+        await sendRequest<SetStatusPanelIsOpenedCommandRequest>({
             type: RequestType.COMMAND,
             statusPanel: { isOpened: false, instant: true },
-            shouldNotify: true
         });
 
         system.suspend();

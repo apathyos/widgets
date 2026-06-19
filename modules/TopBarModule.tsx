@@ -1,15 +1,13 @@
 import app from 'ags/gtk4/app';
-import css from '../style.scss';
 import { createBinding, For } from 'gnim';
 import { TopBar } from '../lib/components';
 import { Astal } from 'ags/gtk4';
-import { WindowId } from '../lib/types/window';
 
-const main = () => {
-    try {
-        const monitors = createBinding(app, 'monitors');
-        const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
+export function TopBarModule() {
+    const monitors = createBinding(app, 'monitors');
+    const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
 
+    return (
         <For
             each={monitors}
             //@ts-expect-error ignore
@@ -28,16 +26,6 @@ const main = () => {
                     <TopBar monitor={monitor} />
                 </window>
             )}
-        </For>;
-    } catch {
-        console.error(`${WindowId.TOP_BAR} has suddenly crashed! Restarting.`);
-        main();
-    }
-};
-
-app.start({
-    css,
-    instanceName: WindowId.TOP_BAR,
-    requestHandler: () => {},
-    main,
-});
+        </For>
+    );
+}
