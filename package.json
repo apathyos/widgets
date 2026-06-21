@@ -5,7 +5,7 @@
     "license": "ISC",
     "scripts": {
         "types": "ags types -u -d .",
-        "bundle": "scripts/bundle.sh"
+        "bootstrap": "scripts/bootstrap.sh"
     },
     "dependencies": {
         "ags": "file:./vendor/dist/ags-3.1.2.tgz",
