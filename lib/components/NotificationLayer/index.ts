@@ -1,1 +1,1 @@
-export { NotificationLayer, type INotificationLayer } from './NotificationLayer';
+export { NotificationLayer } from './NotificationLayer';

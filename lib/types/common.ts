@@ -1,12 +1,3 @@
-import { PropertyValue } from './utils';
-
-export type Margin = {
-    top?: PropertyValue<number>;
-    left?: PropertyValue<number>;
-    right?: PropertyValue<number>;
-    bottom?: PropertyValue<number>;
-};
-
 export enum Offset {
     XS = 2,
     S = 5,
@@ -38,6 +29,7 @@ export enum Transition {
 }
 
 export enum Delay {
+    ZERO = 0,
     XXS = 75,
     XS = 150,
     S = 250,
@@ -68,16 +60,6 @@ export enum Placement {
     BOTTOM = 'bottom'
 }
 
-export type ListItem<P = object, V = string> = {
-    name: string;
-    value: V;
-    payload?: P;
-};
-
-export type Action<P = object, V = string> = ListItem<P, V> & {
-    onAct: () => (void | Promise<void>);
-};
-
 export enum Position {
     BEFORE,
     AFTER,
@@ -89,3 +71,29 @@ export enum Direction {
     UPWARD,
     DOWNWARD,
 }
+
+export enum Axis {
+    X = 'x',
+    Y = 'y'
+}
+
+export type Margin = {
+    top?: number;
+    left?: number;
+    right?: number;
+    bottom?: number;
+};
+
+export type ListItem<P = object, V = string> = {
+    name: string;
+    value: V;
+    payload?: P;
+};
+
+export type Dispose = () => void;
+
+export type Resolve = () => void;
+
+export type Action<P = object, V = string> = ListItem<P, V> & {
+    onAct: () => (void | Promise<void>);
+};

@@ -4,3 +4,4 @@ export * from './StatusPanelButtonsSection';
 export * from './StatusPanelTraySection';
 export * from './StatusPanelPlayerSection';
 export * from './StatusPanelControlsSection';
+export * from './FloatingWindow';

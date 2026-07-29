@@ -1,7 +1,8 @@
 import Notifd from 'gi://AstalNotifd?version=0.1';
 
 import { execAsync } from 'ags/process';
-import { NotificationCategory } from '../../types/notification';
+import { INotification, NotificationCategory } from '../../types/notification';
+import { NotificationToastVariant } from '../../shared/NotificationToast/types';
 
 export class Notification {
     constructor(private NotificationService: Notifd.Notifd) {}
@@ -20,7 +21,7 @@ export class Notification {
             notifsIdsSet.add(n.id);
 
             if (!withOsd && n.category === NotificationCategory.OSD) {
-                return false
+                return false;
             }
 
             return true;
@@ -38,5 +39,17 @@ export class Notification {
             this.getNotifications().forEach((notif) => notif.dismiss());
             res();
         });
+    }
+
+    static getNotificationVariant(args: { notification: INotification }) {
+        const { notification } = args;
+
+        const category = notification.category;
+
+        if (category === NotificationCategory.OSD) {
+            return NotificationToastVariant.OSD;
+        }
+
+        return NotificationToastVariant.APP;
     }
 }

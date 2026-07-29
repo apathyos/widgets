@@ -1,0 +1,1 @@
+export { WindowController } from './WindowController';

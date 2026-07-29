@@ -2,19 +2,19 @@ import { Classes, PropertyValue } from '../../types/utils';
 import cn from 'classnames';
 import { isJSXElement } from '../../utils/typeguards';
 import { toAccessor, unpackAccessor, updateAccessor } from '../../utils/misc';
-import { SPACING_L, SPACING_M } from '../../constants/widget';
 import { SymbolButton } from '../buttons';
 import { Gtk } from 'ags/gtk4';
 import Pango from 'gi://Pango?version=1.0';
 import { createComputed, createState, With } from 'gnim';
 import { getRelativeDate } from '../../utils/time';
-import { Window } from '../Window';
+import { Surface } from '../Surface';
+import { Spacing } from '../../types/common';
 
 export interface INotification {
     ref?: (self: Gtk.Box) => void;
-    title?: PropertyValue<string> | JSX.Element;
-    summary?: PropertyValue<string> | JSX.Element;
-    body?: PropertyValue<string> | JSX.Element;
+    title?: PropertyValue<string | undefined> | JSX.Element;
+    summary?: PropertyValue<string | undefined> | JSX.Element;
+    body?: PropertyValue<string | undefined> | JSX.Element;
     time?: PropertyValue<number>;
     expandable?: PropertyValue<boolean>;
     isExpanded?: PropertyValue<boolean>;
@@ -47,6 +47,11 @@ export function Notification(props: INotification) {
 
     const [time, setTime] = createState('');
     const [isExpanded, setIsExpanded] = createState(unpackAccessor(props.isExpanded) ?? false);
+
+    const hasTitle = createComputed(get => !!(isJSXElement(title) || get(toAccessor(title))));
+    const hasSummary = createComputed(get => !!(isJSXElement(summary) || get(toAccessor(summary))));
+    const hasBody = createComputed(get => !!(isJSXElement(body) || get(toAccessor(body))));
+    const showDelimiter = createComputed(get => get(hasTitle) && get(hasSummary));
 
     const contentLines = createComputed(get => {
         if (isJSXElement(body)) {
@@ -88,7 +93,7 @@ export function Notification(props: INotification) {
     });
 
     return (
-        <Window
+        <Surface
             ref={ref}
             classes={{
                 root: updateAccessor(
@@ -98,11 +103,11 @@ export function Notification(props: INotification) {
             }}
             hexpand
             vexpand
-            spacing={SPACING_M}
+            spacing={Spacing.M}
         >
-            <box orientation={Gtk.Orientation.VERTICAL} spacing={SPACING_L}>
+            <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.L}>
                 <box
-                    spacing={SPACING_M}
+                    spacing={Spacing.M}
                     hexpand
                 >
                     <With value={toAccessor(expandable)}>
@@ -121,42 +126,48 @@ export function Notification(props: INotification) {
                         ) : null}
                     </With>
 
-                    {title && (
-                        <box class={updateAccessor(classes?.title, (title) => cn(title, 'notification__title'))}>
-                            {isJSXElement(title)
-                                ? title
-                                : <label
-                                        class="notification__title-label"
-                                        label={toAccessor(title)(v => v.trim())}
-                                        maxWidthChars={maxTitleWidthChars}
-                                        ellipsize={Pango.EllipsizeMode.END}
-                                    />
-                            }
-                        </box>
-                    )}
+                    <With value={hasTitle}>
+                        {hasTitle => hasTitle ? (
+                            <box class={updateAccessor(classes?.title, (title) => cn(title, 'notification__title'))}>
+                                {isJSXElement(title)
+                                    ? title
+                                    : <label
+                                            class="notification__title-label"
+                                            label={toAccessor(title)(v => v?.trim() ?? '')}
+                                            maxWidthChars={maxTitleWidthChars}
+                                            ellipsize={Pango.EllipsizeMode.END}
+                                        />
+                                }
+                            </box>
+                        ) : null}
+                    </With>
 
-                    {title && summary ? <label label="•" valign={Gtk.Align.CENTER} /> : null}
+                    <With value={showDelimiter}>
+                        {showDelimiter => showDelimiter ? <label label="•" valign={Gtk.Align.CENTER} /> : null}
+                    </With>
 
-                    {summary && (
-                        <box
-                            class={updateAccessor(
-                                classes?.summary,
-                                (summary) => cn(summary, 'notification__summary')
-                            )}
-                        >
-                            {isJSXElement(summary)
-                                ? summary
-                                : (
-                                    <label
-                                        class="notification__summary-label"
-                                        maxWidthChars={maxSummaryWidthChars}
-                                        ellipsize={Pango.EllipsizeMode.END}
-                                        label={toAccessor(summary)(v => v.trim())}
-                                    />
-                                )
-                            }
-                        </box>
-                    )}
+                    <With value={hasSummary}>
+                        {hasSummary => hasSummary ? (
+                            <box
+                                class={updateAccessor(
+                                    classes?.summary,
+                                    (summary) => cn(summary, 'notification__summary')
+                                )}
+                            >
+                                {isJSXElement(summary)
+                                    ? summary
+                                    : (
+                                        <label
+                                            class="notification__summary-label"
+                                            maxWidthChars={maxSummaryWidthChars}
+                                            ellipsize={Pango.EllipsizeMode.END}
+                                            label={toAccessor(summary)(v => v?.trim() ?? '')}
+                                        />
+                                    )
+                                }
+                            </box>
+                        ) : null}
+                    </With>
 
                     <With value={time}>
                         {time => time && (title || summary) ? <label label="•" valign={Gtk.Align.CENTER} /> : null}
@@ -167,34 +178,36 @@ export function Notification(props: INotification) {
                     )}
                 </box>
 
-                {body ? (
-                    <box class={updateAccessor(classes?.body, (body) => cn(body, 'notification__body'))}>
-                        {isJSXElement(body)
-                            ? body
-                            : (
-                                <label
-                                    class="notification__body-label"
-                                    label={createComputed(get => get(contentLines).join('\n'))}
-                                    wrap
-                                    wrapMode={Pango.WrapMode.WORD_CHAR}
-                                    halign={Gtk.Align.START}
-                                    valign={Gtk.Align.START}
-                                    xalign={0}
-                                    useMarkup
-                                    hexpand
-                                    ellipsize={Pango.EllipsizeMode.END}
-                                    lines={createComputed(get => Math.min(
-                                        get(isExpanded)
-                                            ? get(toAccessor(maxContentLines))
-                                            : get(toAccessor(minContentLines)),
-                                            get(contentLines).length + 1
-                                    ))}
-                                    maxWidthChars={maxBodyWidthChars}
-                                />
-                            )
-                        }
-                    </box>
-                ) : null}
+                <With value={hasBody}>
+                    {hasBody => hasBody ? (
+                        <box class={updateAccessor(classes?.body, (body) => cn(body, 'notification__body'))}>
+                            {isJSXElement(body)
+                                ? body
+                                : (
+                                    <label
+                                        class="notification__body-label"
+                                        label={createComputed(get => get(contentLines).join('\n'))}
+                                        wrap
+                                        wrapMode={Pango.WrapMode.WORD_CHAR}
+                                        halign={Gtk.Align.START}
+                                        valign={Gtk.Align.START}
+                                        xalign={0}
+                                        useMarkup
+                                        hexpand
+                                        ellipsize={Pango.EllipsizeMode.END}
+                                        lines={createComputed(get => Math.min(
+                                            get(isExpanded)
+                                                ? get(toAccessor(maxContentLines))
+                                                : get(toAccessor(minContentLines)),
+                                                get(contentLines).length + 1
+                                        ))}
+                                        maxWidthChars={maxBodyWidthChars}
+                                    />
+                                )
+                            }
+                        </box>
+                    ) : null}
+                </With>
             </box>
 
             <With value={toAccessor(closable)}>
@@ -214,6 +227,6 @@ export function Notification(props: INotification) {
                     </box>
                 ) : null}
             </With>
-        </Window>
+        </Surface>
     );
 }

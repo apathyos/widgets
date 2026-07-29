@@ -3,7 +3,7 @@ import { toAccessor, updateAccessor } from '../../utils/misc';
 import { IModal, Modal } from '../Modal';
 import cn from 'classnames';
 import { Classes, PartialSome, PropertyValue } from '../../types/utils';
-import { Astal, Gtk } from 'ags/gtk4';
+import { Gtk } from 'ags/gtk4';
 import { isJSXElement } from '../../utils/typeguards';
 import { SymbolButton } from '../buttons';
 import { SPACING_M, SPACING_XL } from '../../constants/widget';
@@ -16,12 +16,11 @@ export interface IToast extends Omit<PartialSome<IModal, 'children'>, 'orientati
     expandable?: PropertyValue<boolean>;
     closable?: PropertyValue<boolean>;
     classes?: Classes<'root' | 'title' | 'summary' | 'body' | 'expandButton' | 'closeButton'>;
+    onClose?: () => void;
 }
 
 export function Toast(props: IToast) {
-    const { ref, title, summary, body, expandable, closable, classes, ...restProps } = props;
-
-    let windowRef: Astal.Window | null = null;
+    const { title, summary, body, expandable, closable, classes, onClose, ...restProps } = props;
 
     const [isExpanded, setIsExpanded] = createState(false);
     const showHeader = createComputed(get => !!get(toAccessor(title)));
@@ -29,10 +28,6 @@ export function Toast(props: IToast) {
     return (
         <Modal
             {...restProps}
-            ref={self => {
-                windowRef = self;
-                ref?.(self);
-            }}
             classes={{
                 root: updateAccessor(classes?.root, (root, get) => cn(root, 'toast', get(isExpanded) && 'toast_expanded'))
             }}
@@ -131,7 +126,7 @@ export function Toast(props: IToast) {
                     {closable => closable ? (
                         <box vexpand valign={Gtk.Align.START}>
                             <SymbolButton
-                                onClick={() => windowRef?.destroy()}
+                                onClick={onClose}
                                 classes={{
                                     root: updateAccessor(
                                         classes?.closeButton,

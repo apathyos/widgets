@@ -1,7 +1,8 @@
 import { Astal, Gdk, Gtk } from 'ags/gtk4';
-import { Anchor } from '../types/widget';
+import { Anchor, Element } from '../types/widget';
 import { getMonitorForSurface, getWidgetMonitor, getWidgetSurface } from './display';
 import GLib from 'gi://GLib?version=2.0';
+import { Margin } from '../types/common';
 
 export const getWidgetAbsolutePosition = (widget: Gtk.Widget) => {
     const root = widget.get_root();
@@ -110,4 +111,133 @@ export const trackWidgetSurfaceMonitorAttachment = (
     if (getWidgetSurface(widget)) {
         attach();
     }
+};
+
+export const getHasAnchorSide = (args: {
+    anchor: Astal.WindowAnchor;
+    side: Astal.WindowAnchor;
+}) => {
+    const { anchor, side } = args;
+
+    return (anchor & side) === side;
+};
+
+export const getCenterPositionForWidget = (args: {
+    ref: Element;
+    monitor: Gdk.Monitor;
+    anchor: Astal.WindowAnchor;
+}) => {
+    const { ref, monitor, anchor } = args;
+
+    const alloc = ref.get_allocation();
+    const mgeo = monitor.get_geometry();
+
+    const yShift = mgeo.height * 0.05;
+
+    return {
+        top: mgeo.height / 2 - alloc.height / 2 - (
+            getHasAnchorSide({ anchor, side: Astal.WindowAnchor.BOTTOM })
+                ? -yShift
+                : yShift
+        ),
+        left: mgeo.width / 2 - alloc.width / 2
+    };
+};
+
+export const getElementMarginPositionForAnchor = (args: {
+    position: { x: number; y: number };
+    anchor: Astal.WindowAnchor;
+}): Margin => {
+    const { position: { x, y }, anchor } = args;
+
+    if (
+        getHasAnchorSide({ anchor, side: Astal.WindowAnchor.TOP })
+        && getHasAnchorSide({ anchor, side: Astal.WindowAnchor.RIGHT })
+    ) {
+        return { top: y, right: x };
+    }
+
+    if (
+        getHasAnchorSide({ anchor, side: Astal.WindowAnchor.BOTTOM })
+        && getHasAnchorSide({ anchor, side: Astal.WindowAnchor.LEFT })
+    ) {
+        return { left: x, bottom: y };
+    }
+
+    if (
+        getHasAnchorSide({ anchor, side: Astal.WindowAnchor.BOTTOM })
+        && getHasAnchorSide({ anchor, side: Astal.WindowAnchor.RIGHT })
+    ) {
+        return { bottom: y, right: x };
+    }
+
+    return { top: y, left: x };
+};
+
+export const getElementMarginPropertyName = (element: Element, property: keyof Margin) => {
+    if (property === 'bottom') {
+        return 'marginBottom';
+    }
+
+    if (property === 'left') {
+        return element instanceof Astal.Window ? 'marginLeft' : 'marginStart';
+    }
+
+    if (property === 'right') {
+        return element instanceof Astal.Window ? 'marginRight' : 'marginEnd';
+    }
+
+    return 'marginTop';
+};
+
+export const setElementMarginProperty = (
+    element: Element,
+    prop: keyof Margin,
+    value: number | undefined | null
+) => {
+    if (typeof value !== 'number') {
+        return;
+    }
+
+    //@ts-expect-error need a more accurate way to determine correct type here
+    element[getElementMarginPropertyName(element, prop)] = value;
+};
+
+export const setElementMargin = (element: Element, margin: Margin) => {
+    for (const prop in margin) {
+        const p = prop as keyof Margin;
+
+        setElementMarginProperty(element, p, margin[p]);
+    }
+};
+
+export const setElementMarginPositionForAnchor = (args: {
+    element: Element;
+    position: { x: number; y: number };
+    anchor: Astal.WindowAnchor;
+}) => {
+    const { element, position, anchor } = args;
+
+    const margin = getElementMarginPositionForAnchor({ position, anchor });
+    setElementMargin(element, margin);
+};
+
+export const getElementDragDelta = (args: {
+    anchor: Astal.WindowAnchor;
+    delta: { x: number; y: number };
+}) => {
+    const { anchor, delta } = args;
+
+    let x = delta.x;
+    let y = delta.y;
+
+    if (getHasAnchorSide({ anchor, side: Astal.WindowAnchor.RIGHT })) {
+        x = -x;
+    }
+
+    if (getHasAnchorSide({ anchor, side: Astal.WindowAnchor.BOTTOM })) {
+        y = -y;
+    }
+
+    return { x, y };
 };

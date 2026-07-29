@@ -4,6 +4,8 @@ import { isAccessor } from './typeguards';
 import { Position } from '../types/common';
 import GLib from 'gi://GLib?version=2.0';
 
+export const getId = () => GLib.uuid_string_random();
+
 export const toAccessor = <T>(value: Accessor<T> | T) => {
     if (isAccessor(value)) {
         return value;
@@ -16,7 +18,7 @@ export const updateAccessor = <T, R>(
     value: PropertyValue<T> | undefined,
     cb: (value: T | undefined, get: <V>(signal: PropertyValue<V>) => V) => R,
 ) => {
-    return createComputed((get) => cb(get(toAccessor(value)), (signal: PropertyValue<V>) => get(toAccessor(signal))));
+    return createComputed((get) => cb(get(toAccessor(value)), <V>(signal: PropertyValue<V>) => get(toAccessor(signal))));
 };
 
 export const unpackAccessor = <T>(value: PropertyValue<T>) => {

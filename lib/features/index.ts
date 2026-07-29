@@ -31,3 +31,5 @@ export * from './SystemSuspendButton';
 export * from './SystemLogoutButton';
 export * from './DpmsPopupButton';
 export * from './CpuProfileSwitcherDropdownButton';
+export * from './WindowFactory';
+export * from './NotificationWindow';

@@ -1,4 +1,4 @@
-import { Astal } from 'ags/gtk4';
+import { Gtk } from 'ags/gtk4';
 import { Classes, PropertyValue } from '../../types/utils';
 import { IModalBase } from '../base/ModalBase';
 
@@ -16,9 +16,9 @@ export interface INotificationToastBase extends Pick<
     | 'onClick'
     | 'onKeyDown'
 > {
-    ref?: (self: Astal.Window) => void;
-    title?: PropertyValue<string> | JSX.Element;
-    summary?: PropertyValue<string> | JSX.Element;
+    ref?: (self: Gtk.Box) => void;
+    title?: PropertyValue<string | undefined> | JSX.Element;
+    summary?: PropertyValue<string | undefined> | JSX.Element;
     body: PropertyValue<string> | JSX.Element;
     classes?: Classes<'root'>;
     onClose?: () => void;

@@ -1,0 +1,35 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.floating-window:not(.floating-window_no-frame) {
+    background-color: colors.$bg;
+    border: 1px solid colors.$border;
+    border-radius: geometry.$border-radius-m;
+    padding: geometry.$padding-l geometry.$padding-l;
+}
+
+.floating-window-content-container {
+    min-width: inherit;
+}
+
+.floating-window-title-container {
+    background-color: colors.$bg-ternary;
+    border-top-left-radius: geometry.$border-radius-m;
+    border-top-right-radius: geometry.$border-radius-m;
+    padding: geometry.$padding-m;
+    margin: 0 - geometry.$padding-l;
+}
+
+.floating-window__title {
+    font-size: fonts.$font-size-l;
+}
+
+.floating-window__close {
+    background-color: transparent;
+    color: colors.$bg-alt;
+
+    &:hover {
+        color: colors.$bg-alt-hover;
+    }
+}
