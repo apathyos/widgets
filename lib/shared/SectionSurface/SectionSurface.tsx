@@ -1,19 +1,19 @@
 import { Gtk } from 'ags/gtk4';
-import { Section, Window } from '..';
+import { Section, Surface } from '..';
 import { Classes } from '../../types/utils';
 import { updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
 
-export interface ISectionWindow {
+export interface ISectionSurface {
     sections: JSX.Element[];
     classes?: Classes<'root'>;
 }
 
-export function SectionWindow(props: ISectionWindow) {
+export function SectionSurface(props: ISectionSurface) {
     const { sections, classes } = props;
 
     return (
-        <Window
+        <Surface
             classes={{
                 root: updateAccessor(classes?.root, (root) => cn(root, 'section-window')),
             }}
@@ -23,6 +23,6 @@ export function SectionWindow(props: ISectionWindow) {
                     <Section hexpand>{section}</Section>
                 ))}
             </box>
-        </Window>
+        </Surface>
     );
 }

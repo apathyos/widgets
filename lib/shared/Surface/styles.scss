@@ -1,0 +1,8 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.surface {
+    background-color: colors.$bg;
+    border-radius: geometry.$border-radius-m;
+    padding: geometry.$padding-m geometry.$padding-m;
+}

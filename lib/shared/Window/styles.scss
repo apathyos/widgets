@@ -1,8 +1,7 @@
-@use '../../styles/colors.scss';
-@use '../../styles/geometry.scss';
-
 .window {
-    background-color: colors.$bg;
-    border-radius: geometry.$border-radius-m;
-    padding: geometry.$padding-m geometry.$padding-m;
+    background-color: transparent;
+}
+
+.window_hidden {
+    opacity: 0;
 }

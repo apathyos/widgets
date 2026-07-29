@@ -4,7 +4,7 @@ import { Astal, Gdk } from 'ags/gtk4';
 import { createState, With } from 'gnim';
 import { timeout, Timer } from 'ags/time';
 import { TRANSITION_NORMAL } from '../lib/constants/widget';
-import { Popover } from '../lib/shared';
+import { Window } from '../lib/shared';
 import { handleRequest } from '../lib/rpc/utils';
 import {
     getIsSetStatusPanelOpenedCommandRequest,
@@ -60,12 +60,12 @@ export function StatusPanelModule() {
     );
 
     return (
-        <Popover
+        <Window
             isVisible={isPanelVisible}
             anchor={TOP | RIGHT}
-            layer={Astal.Layer.OVERLAY}
+            layer={Astal.Layer.TOP}
             keymode={Astal.Keymode.ON_DEMAND}
-            onMount={({ monitor }) => setActiveMonitor(monitor)}
+            onVisible={({ monitor }) => setActiveMonitor(monitor)}
         >
             <With value={isPanelVisible}>
                 {isPanelVisible => isPanelVisible ? (
@@ -76,6 +76,6 @@ export function StatusPanelModule() {
                     />
                 ) : null}
             </With>
-        </Popover>
+        </Window>
     );
 }

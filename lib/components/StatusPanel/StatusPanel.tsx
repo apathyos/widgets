@@ -1,4 +1,4 @@
-import { Revealer, Window } from '../../shared';
+import { Revealer, Surface } from '../../shared';
 import { Classes, PropertyValue } from '../../types/utils';
 import cn from 'classnames';
 import { toAccessor, updateAccessor } from '../../utils/misc';
@@ -44,7 +44,7 @@ export function StatusPanel(props: IStatusPanel) {
                 (get) => `min-height: ${get(toAccessor(windowHeight)) * STATUS_PANEL_HEIGHT_MULTIPLIER}px;`,
             )}
         >
-            <Window
+            <Surface
                 css={`
                     min-width: ${STATUS_PANEL_WIDTH}px;
                     margin-right: ${Spacing.XL}px;
@@ -68,7 +68,7 @@ export function StatusPanel(props: IStatusPanel) {
                         <StatusPanelControlsSection isRootMounted={isOpened} />
                     </box>
                 </box>
-            </Window>
+            </Surface>
         </Revealer>
     );
 }

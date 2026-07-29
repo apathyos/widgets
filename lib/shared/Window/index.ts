@@ -1,1 +1,1 @@
-export { Window, type IWindow } from './Window';
+export { Window, type IWindow} from './Window';

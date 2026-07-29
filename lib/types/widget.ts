@@ -26,6 +26,10 @@ export enum IconSize {
     XL = 64
 }
 
+export type Element = Gtk.Widget | Astal.Window;
+
+export type Component<P extends object> = (props: P) => JSX.Element;
+
 export type TransitionOptions = {
     enabled?: boolean;
     type?: Gtk.RevealerTransitionType;
