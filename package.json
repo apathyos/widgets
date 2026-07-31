@@ -8,8 +8,7 @@
         "default": "./App.tsx"
     },
     "scripts": {
-        "types": "ags types -u -d .",
-        "postinstall": "npm run types"
+        "types": "ags types -u -d ."
     },
     "dependencies": {
         "@apathoid/utils": "1.3.0",
