@@ -4,11 +4,11 @@ import { Network } from './Network';
 
 export class WifiNetwork extends Network {
     getDevice() {
-        return this.NetworkService.wifi.device;
+        return this.NetworkService.wifi?.device ?? null;
     }
 
     getIsEnabled(): boolean {
-        return this.NetworkService.wifi.enabled;
+        return this.NetworkService.wifi?.enabled ?? false;
     }
 
     toggleEnabled(args?: { value?: boolean; }) {
@@ -17,11 +17,11 @@ export class WifiNetwork extends Network {
         const currentValue = this.getIsEnabled();
         const newValue = value ?? !currentValue;
 
-        this.NetworkService.wifi.set_enabled(newValue);
+        this.NetworkService.wifi?.set_enabled(newValue);
     }
 
     getIsConnected() {
-        return !!this.NetworkService.wifi.activeConnection;
+        return !!this.NetworkService.wifi?.activeConnection;
     }
 
     async toggleConnected(args?: { connection?: NetworkConnection; value?: boolean; }) {
@@ -39,7 +39,7 @@ export class WifiNetwork extends Network {
     }
 
     getAccessPoints() {
-        return this.NetworkService.wifi.device.accessPoints.sort((a, b) => {
+        return this.NetworkService.wifi?.device.accessPoints.sort((a, b) => {
             const aProfile = this.getConnectionLastUsedProfile({ connection: a });
             const bProfile = this.getConnectionLastUsedProfile({ connection: b });
 
@@ -67,7 +67,7 @@ export class WifiNetwork extends Network {
 
         const isAccessPoint = this.getIsAccessPoint(connection);
 
-        return this.NetworkService.wifi.accessPoints.find(
+        return this.NetworkService.wifi?.accessPoints.find(
             ap => isAccessPoint ? ap.get_bssid() === connection.get_bssid() : false
         )?.requiresPassword ?? true;
     }
@@ -81,11 +81,11 @@ export class WifiNetwork extends Network {
 
     enableScanning() {
         if (!this.getIsEnabled()) {
-            console.error('Can\'t enable scanning: wi-fi is off!')
+            console.error('Can\'t enable scanning: wi-fi is off!');
             return;
         }
 
-        !this.NetworkService.wifi.get_scanning() && this.NetworkService.wifi.scan();
+        !this.NetworkService.wifi?.get_scanning() && this.NetworkService.wifi?.scan();
     }
 
     getIcon(): Icon {
@@ -104,7 +104,7 @@ export class WifiNetwork extends Network {
     private async toggleConnectedState(args: { value?: boolean }) {
         const { value = !this.getIsConnected() } = args;
 
-        const activeConnection = this.NetworkService.wifi.activeConnection;
+        const activeConnection = this.NetworkService.wifi?.activeConnection;
 
         if (value && activeConnection || !value && !activeConnection) {
             return;

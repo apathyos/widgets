@@ -4,7 +4,7 @@ import { Classes, PropertyValue } from '../../types/utils';
 import { toAccessor, unpackAccessor, updateAccessor } from '../../utils/misc';
 import { getWidgetAbsolutePosition, trackWidgetSurfaceMonitorAttachment } from '../../utils/widget';
 import { timeout } from 'ags/time';
-import { Popover } from '../Popover';
+import { Window } from '../Window';
 import { Astal } from 'ags/gtk4';
 import { Align, Offset, Placement } from '../../types/common';
 import cn from 'classnames';
@@ -223,7 +223,7 @@ export function Floated(props: IFloated) {
         </box>
     );
 
-    <Popover
+    <Window
         isVisible={isOpened}
         anchor={anchor}
         canTarget
@@ -251,7 +251,7 @@ export function Floated(props: IFloated) {
                 ) : FloatContent
             }
         </With>
-    </Popover>;
+    </Window>;
 
     return props.children({ toggleOpen });
 }

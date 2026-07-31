@@ -4,8 +4,6 @@ import { WindowId, WindowType } from '../../types/windowing';
 import {
     ActionModalWindowCommand,
     ActionModalWindowOpenCommandProps,
-    InputModalWindowCommand,
-    InputModalWindowOpenCommandProps
 } from '../Modal/types/windowing';
 import { NotificationWindowCommand, NotificationWindowOpenCommandProps } from '../Notification/types/windowing';
 import { Window } from '../Window';
@@ -17,13 +15,11 @@ export type AnyWindow = {
 export type WindowCommand = {
     [WindowType.NOTIFICATION]: NotificationWindowCommand;
     [WindowType.ACTION_MODAL]: ActionModalWindowCommand;
-    [WindowType.INPUT_MODAL]: InputModalWindowCommand;
 };
 
 export type WindowOpenCommandProps = {
     [WindowType.NOTIFICATION]: NotificationWindowOpenCommandProps;
     [WindowType.ACTION_MODAL]: ActionModalWindowOpenCommandProps;
-    [WindowType.INPUT_MODAL]: InputModalWindowOpenCommandProps;
 };
 
 export type WindowOpenCommand<T extends WindowType> = {

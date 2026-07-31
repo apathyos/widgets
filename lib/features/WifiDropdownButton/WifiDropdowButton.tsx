@@ -31,7 +31,7 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
         setIcon(wifi.getIcon());
     };
 
-    NetworkService.wifi.connect('notify', refresh);
+    NetworkService.wifi?.connect('notify', refresh);
     NetworkService.client.connect('notify::active-connections', refresh);
 
     const label = createComputed((get) => {
@@ -56,7 +56,7 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
                 scanTimer?.cancel();
             }}
             onSelect={async (item) => {
-                const connection = unpackAccessor(connections).find(c => c.get_bssid() === item.value);
+                const connection = unpackAccessor(connections)?.find(c => c.get_bssid() === item.value);
 
                 connection && await wifi.toggleConnected({ connection });
                 refresh();
@@ -74,7 +74,7 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
                     scanTimer?.cancel();
                 }
             }}
-            items={connections((v) => v.map((connection) => ({
+            items={connections((v) => v?.map((connection) => ({
                 name: getStringFromBytes(connection.get_ssid()),
                 value: connection.get_bssid(),
                 icon: (
@@ -83,7 +83,7 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
                     </box>
                 ),
                 isActive: wifi.getIsConnected() && wifi.getIsConnectionActive({ connection })
-            })))}
+            })) ?? [])}
             classes={{
                 root: updateAccessor(classes?.root, (root) => cn(root, 'wifi-dropdown-button')),
                 icon: updateAccessor(classes?.icon, (icon) => cn(icon, 'wifi-dropdown-button__icon')),

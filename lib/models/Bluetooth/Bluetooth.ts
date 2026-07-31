@@ -17,7 +17,7 @@ export class Bluetooth extends SystemComponent {
         const currentValue = this.BluetoothService.isPowered;
         const newValue = value ?? !currentValue;
 
-        this.BluetoothService.adapter.set_powered(newValue);
+        this.BluetoothService.adapter?.set_powered(newValue);
     }
 
     getIsConnected() {
@@ -42,11 +42,11 @@ export class Bluetooth extends SystemComponent {
 
     getIsDiscovering() {
         if (!this.getIsEnabled()) {
-            console.error('Can\'t enable discovering: bluetooth is off!')
+            console.error('Can\'t enable discovering: bluetooth is off!');
             return;
         }
 
-        return this.BluetoothService.adapter.discovering;
+        return this.BluetoothService.adapter?.discovering;
     }
 
     getDevices(args?: { onlyActive?: boolean; }) {
@@ -67,9 +67,9 @@ export class Bluetooth extends SystemComponent {
         }
 
         if (value) {
-            this.BluetoothService.adapter.start_discovery();
+            this.BluetoothService.adapter?.start_discovery();
         } else {
-            this.BluetoothService.adapter.stop_discovery();
+            this.BluetoothService.adapter?.stop_discovery();
         }
     }
 

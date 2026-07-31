@@ -1,4 +1,4 @@
-import { Astal, Gtk } from 'ags/gtk4';
+import { Gtk } from 'ags/gtk4';
 import { SPACING_L } from '../../constants/widget';
 import { Classes, PropertyValue } from '../../types/utils';
 import { toAccessor, updateAccessor } from '../../utils/misc';
@@ -23,12 +23,9 @@ export function ActionModal(props: IActionModal) {
         classes,
     } = props;
 
-    let windowRef: Astal.Window | null = null;
-
     return (
         <Modal
             {...props}
-            ref={self => (windowRef = self)}
             classes={{
                 ...classes,
                 root: updateAccessor(classes?.root, root => cn(root, 'action-modal'))
@@ -61,7 +58,6 @@ export function ActionModal(props: IActionModal) {
                                 onClick={async () => {
                                     try {
                                         await action.onAct();
-                                        windowRef?.destroy();
                                     } catch {}
                                 }}
                                 classes={{

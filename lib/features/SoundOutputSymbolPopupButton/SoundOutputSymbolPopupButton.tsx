@@ -41,11 +41,11 @@ export function SoundOutputSymbolPopupButton(props: ISoundOutputSymbolPopupButto
                 const output = soundOutput.getOutputById({ id: +value });
                 output?.set_is_default(true);
             }}
-            items={outputs(v => v.map(output => ({
-                name: output.description,
+            items={outputs(v => v?.map(output => ({
+                name: output.description ?? '',
                 value: String(output.id),
                 isActive: output.get_is_default()
-            })))}
+            })) ?? [])}
             popupPlacement={Placement.BOTTOM}
         >
             <label label={icon(v => v.icon)} hexpand halign={Gtk.Align.CENTER} />

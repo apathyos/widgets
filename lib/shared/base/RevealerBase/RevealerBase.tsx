@@ -1,5 +1,5 @@
 import { Gtk } from 'ags/gtk4';
-import { Children, Classes, PropertyValue } from '../../../types/utils';
+import { Children, Classes, PropertyValue, Reactive } from '../../../types/utils';
 import { TRANSITION_NORMAL } from '../../../constants/widget';
 import { Margin } from '../../../types/common';
 
@@ -9,7 +9,7 @@ export interface IRevealerBase {
     isRevealed: PropertyValue<boolean>;
     transitionType?: Gtk.RevealerTransitionType;
     transitionDuration?: number;
-    margin?: Margin;
+    margin?: Reactive<Margin>;
     heightRequest?: PropertyValue<number>;
     widthRequest?: PropertyValue<number>;
     css?: PropertyValue<string>;

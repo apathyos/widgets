@@ -1,5 +1,5 @@
 import { PopupButton, IPopupButton } from '../../shared';
-import { Classes, UnpackAcessor } from '../../types/utils';
+import { Classes, UnpackAccessor } from '../../types/utils';
 import cn from 'classnames';
 import { updateAccessor } from '../../utils/misc';
 import { Gtk } from 'ags/gtk4';
@@ -29,7 +29,7 @@ export function SystemPowerButton(props: ISystemPowerButton) {
         }
     ];
 
-    const items: (UnpackAcessor<IPopupButton['items']>[0])[] = actions.map(({ name, value, icon, onAct }) => ({
+    const items: (UnpackAccessor<IPopupButton['items']>[0])[] = actions.map(({ name, value, icon, onAct }) => ({
         name,
         value,
         icon,

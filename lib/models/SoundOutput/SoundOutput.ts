@@ -24,7 +24,7 @@ export class SoundOutput extends SystemComponent {
     }) {
         const { id } = args;
 
-        return this.WirePlumberService.audio.speakers.find(s => s.id === id);
+        return this.WirePlumberService.audio.speakers?.find(s => s.id === id);
     }
 
     getIcon() {

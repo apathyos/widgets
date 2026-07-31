@@ -1,7 +1,7 @@
 import app from 'ags/gtk4/app';
 import Gtk from 'gi://Gtk';
 import { IPopupButton, PopupButton } from '../../shared';
-import { Classes, UnpackAcessor } from '../../types/utils';
+import { Classes, UnpackAccessor } from '../../types/utils';
 import { handleRequest } from '../../rpc/utils';
 import { getIsSetOutputsCommandRequest } from '../../rpc';
 import { createComputed, createEffect, createState, onCleanup } from 'gnim';
@@ -40,7 +40,7 @@ export function DpmsPopupButton(props: IDpmsPopupButton) {
         outputsListenerDispose();
     });
 
-    const items = createComputed<(UnpackAcessor<IPopupButton<Output>['items']>[0])[]>(
+    const items = createComputed<(UnpackAccessor<IPopupButton<Output>['items']>[0])[]>(
         (get) => get(outputs).map(({ name, power, brightness }) => ({
             name,
             value: name,
@@ -61,9 +61,6 @@ export function DpmsPopupButton(props: IDpmsPopupButton) {
                         }
 
                         display.setBrightness({ value: `${value}%`, device: brightness?.device });
-
-                        // const outputs = await display.getOutputsInfo();
-                        // broadcastRequest(getSetOutputsCommandRequest(outputs));
                     }}
                 >
                     {children}

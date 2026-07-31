@@ -1,7 +1,8 @@
 import { TrayType } from '../../types/tray';
 import { trays } from '../../config/tray';
 import { toAccessor, updateAccessor } from '../../utils/misc';
-import { ITabs, SymbolButton, Tabs } from '../../shared';
+// import { ITabs, SymbolButton, Tabs } from '../../shared';
+import { SymbolButton } from '../../shared';
 import { Classes, PropertyValue } from '../../types/utils';
 import cn from 'classnames';
 import { SPACING_M } from '../../constants/widget';

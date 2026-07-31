@@ -20,7 +20,7 @@ export function WifiButton(props: IWifiButton) {
     const [isConnected, setIsConnected] = createState(wifi.getIsConnected());
     const [icon, setIcon] = createState(wifi.getIcon());
 
-    NetworkService.wifi.connect('notify', () => {
+    NetworkService.wifi?.connect('notify', () => {
         setIsConnected(wifi.getIsConnected());
         setIcon(wifi.getIcon());
     });
