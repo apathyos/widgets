@@ -1,16 +1,28 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "compilerOptions": {
-    "baseUrl": "./src",
-    "experimentalDecorators": false,
-    "jsx": "react-jsx",
-    "jsxImportSource": "ags/gtk4",
-    "lib": [
-      "ES2023"
+    "compilerOptions": {
+        "experimentalDecorators": false,
+        "jsx": "react-jsx",
+        "jsxImportSource": "ags/gtk4",
+        "lib": ["ESNext"],
+        "module": "ES2022",
+        "moduleResolution": "Bundler",
+        "noEmit": true,
+        "paths": {
+            "@/*": ["./lib/*"],
+            "@shared/*": ["./lib/shared/*"],
+            "@types/*": ["./lib/types/*"],
+            "@utils/*": ["./lib/utils/*"],
+        },
+        "rootDir": ".",
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "ES2020",
+    },
+    "include": [
+        "App.tsx",
+        "env.d.ts",
+        "lib/**/*",
+        "modules/**/*",
+        "@girs/**/*",
     ],
-    "module": "ES2022",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "target": "ES2020"
-  }
 }

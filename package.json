@@ -1,30 +1,23 @@
 {
     "name": "apathyos-widgets",
+    "version": "1.0.0",
     "description": "Collection of widgets for apathyos desktop environment",
     "author": "apathoid",
     "license": "ISC",
+    "exports": {
+        "default": "./App.tsx"
+    },
     "scripts": {
-        "types": "ags types -u -d .",
-        "bootstrap": "scripts/bootstrap.sh"
+        "types": "ags types -u -d ."
     },
     "dependencies": {
-        "ags": "file:./vendor/dist/ags-3.1.2.tgz",
-        "gnim": "file:./vendor/dist/gnim-1.9.1.tgz",
         "@apathoid/utils": "1.3.0",
         "classnames": "2.5.1",
-        "lodash.merge": "4.6.2",
-        "smol-toml": "1.6.1"
+        "lodash.merge": "4.6.2"
     },
     "devDependencies": {
-        "@apathoid/eslint-config": "1.1.5",
-        "@types/lodash.merge": "4.6.9"
-    },
-    "config": {
-        "ags": {
-            "version": "3.1.2"
-        },
-        "gnim": {
-            "version": "1.9.0"
-        }
+        "@apathoid/eslint-config": "1.2.0",
+        "@types/lodash.merge": "4.6.9",
+        "typescript": "6.0.3"
     }
 }

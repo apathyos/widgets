@@ -4,193 +4,112 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    astal = {
+      url = "github:Aylur/astal";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ags = {
       url = "github:Aylur/ags";
+      inputs.astal.follows = "astal";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      ags,
-      ...
-    }:
-    let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-      lib = pkgs.lib;
+  outputs = {
+    self,
+    nixpkgs,
+    ags,
+    ...
+  }: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+    lib = pkgs.lib;
 
-      basePackage = lib.importJSON ./package.json;
-      baseLock = lib.importJSON ./package-lock.json;
+    basePackage = lib.importJSON ./package.json;
+    pname = basePackage.name;
+    pversion = basePackage.version;
+    entry = basePackage.exports.default;
 
-      pname = basePackage.name or "apathyos-widgets";
-      pversion = basePackage.version or "0.1.0";
-      agsVersion = basePackage.config.ags.version;
-      gnimVersion = basePackage.config.gnim.version;
+    source = pkgs.lib.cleanSource ./.;
+    agsPkg = ags.packages.${system}.default;
 
-      agsPkg = ags.packages.${system}.default;
+    astalPackages = with ags.packages.${system}; [
+      io
+      astal4
+      apps
+      auth
+      battery
+      mpris
+      notifd
+      bluetooth
+      network
+      wireplumber
+    ];
 
-      astalPackages = with ags.packages.${system}; [
-        io
-        astal4
-        apps
-        battery
-        mpris
-        notifd
-        bluetooth
-        network
-        wireplumber
-      ];
-
-      extraPackages = astalPackages ++ [
+    runtimePackages =
+      astalPackages
+      ++ [
+        pkgs.gjs
         pkgs.libadwaita
         pkgs.libsoup_3
+        pkgs.glib-networking
       ];
 
-      dropAgsGnim =
-        attrs:
-        removeAttrs attrs [
-          "ags"
-          "gnim"
-        ];
+    agsCli = ags.packages.${system}.default;
 
-      nixPackage = basePackage // {
-        dependencies = dropAgsGnim basePackage.dependencies;
-        devDependencies = dropAgsGnim basePackage.devDependencies;
+    agsDev = agsCli.override {
+      extraPackages = runtimePackages;
+    };
+  in {
+    packages.${system}.default = pkgs.buildNpmPackage {
+      inherit pname pversion;
+
+      name = pname;
+      src = source;
+
+      npmDeps = pkgs.importNpmLock {
+        npmRoot = source;
       };
 
-      nixPackageLock = baseLock // {
-        packages = removeAttrs (baseLock.packages or { }) [
-          "node_modules/ags"
-          "node_modules/gnim"
-        ];
-        dependencies = dropAgsGnim (baseLock.dependencies or { });
-      };
+      npmConfigHook = pkgs.importNpmLock.npmConfigHook;
 
-      agsSrc = pkgs.fetchFromGitHub {
-        owner = "Aylur";
-        repo = "ags";
-        rev = "v${agsVersion}";
-        hash = "sha256-tM3s7CX+tgxlYW0Sk3nzVThg2MHn08foIuMxABupxIs=";
-      };
+      dontNpmBuild = true;
 
-      gnimSrc = pkgs.fetchFromGitHub {
-        owner = "Aylur";
-        repo = "gnim";
-        rev = "v${gnimVersion}";
-        hash = "sha256-yslzUPALGrK9b59UBcjPZe6QtKwPwa7/x5dowy8Igv4=";
-      };
+      nativeBuildInputs = [
+        pkgs.wrapGAppsHook3
+        pkgs.gobject-introspection
+        agsCli
+      ];
 
-      agsNodePackage = pkgs.runCommand "ags-node-package" { } ''
-        mkdir -p $out/node_modules/ags
-        cp ${agsSrc}/package.json $out/node_modules/ags/package.json
-        cp -r ${agsSrc}/lib $out/node_modules/ags/lib
+      buildInputs = runtimePackages;
+
+      installPhase = ''
+        runHook preInstall
+
+        mkdir -p "$out/bin"
+
+        ags bundle ${entry} "$out/bin/${pname}"
+
+        runHook postInstall
       '';
 
-      gnimNodePackage = pkgs.stdenv.mkDerivation (finalAttrs: {
-        pname = "gnim-node-package";
-        version = gnimVersion;
-        src = gnimSrc;
+      postFixup = ''
+        wrapProgram $out/bin/apathyos-widgets --run "${agsPkg}/bin/ags quit --instance apathyos || true"
+      '';
 
-        nativeBuildInputs = [
-          pkgs.nodejs
-          pkgs.pnpm_10
-          pkgs.pnpmConfigHook
-          pkgs.glib
-          pkgs.bash
-        ];
-
-        pnpmDeps = pkgs.fetchPnpmDeps {
-          inherit (finalAttrs) pname version src;
-          pnpm = pkgs.pnpm_10;
-          fetcherVersion = 3;
-          hash = "sha256-azIaHmaawxZ3grABm7ItbNFeUJknQkClimxagrtj5yI=";
-        };
-
-        postPatch = ''
-          patchShebangs --build ./scripts
-        '';
-
-        buildPhase = ''
-          runHook preBuild
-          pnpm run build
-          runHook postBuild
-        '';
-
-        installPhase = ''
-          runHook preInstall
-          mkdir -p $out/node_modules/gnim
-          cp package.json $out/node_modules/gnim/package.json
-          cp -r dist $out/node_modules/gnim/dist
-          runHook postInstall
-        '';
-      });
-    in
-    {
-      packages.${system} = {
-        default = pkgs.buildNpmPackage {
-          name = pname;
-          version = pversion;
-          src = ./.;
-
-          npmDeps = pkgs.importNpmLock {
-            package = nixPackage;
-            packageLock = nixPackageLock;
-          };
-          npmConfigHook = pkgs.importNpmLock.npmConfigHook;
-
-          nativeBuildInputs = with pkgs; [
-            wrapGAppsHook3
-            gobject-introspection
-            ags.packages.${system}.default
-          ];
-
-          buildInputs = extraPackages ++ [
-            pkgs.glib
-            pkgs.gjs
-          ];
-
-          dontNpmBuild = true;
-          dontNpmPrune = true;
-
-          installPhase = ''
-            runHook preInstall
-
-            mkdir -p node_modules
-            mkdir -p $out/bin
-
-            ln -s ${agsNodePackage}/node_modules/ags node_modules/ags
-            ln -s ${gnimNodePackage}/node_modules/gnim node_modules/gnim
-
-            ags bundle App.tsx $out/bin/apathyos-widgets
-
-            runHook postInstall
-          '';
-
-          postFixup = ''
-            wrapProgram $out/bin/apathyos-widgets --run "${agsPkg}/bin/ags quit --instance apathyos || true"
-          '';
-        };
-
-        ags = ags.packages.${system}.default;
-      };
-
-      devShells.${system} = {
-        default = pkgs.mkShell {
-          packages = with pkgs; [
-            pnpm
-            glib
-            pkg-config
-            gobject-introspection
-          ];
-          buildInputs = [
-            (ags.packages.${system}.default.override {
-              inherit extraPackages;
-            })
-          ];
-        };
-      };
+      ags = ags.packages.${system}.default;
     };
+
+    devShells.${system}.default = pkgs.mkShell {
+      packages = [
+        agsDev
+        pkgs.glib
+        pkgs.pkg-config
+        pkgs.gobject-introspection
+        pkgs.nodejs
+        pkgs.typescript
+      ];
+    };
+  };
 }

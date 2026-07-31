@@ -1,6 +1,0 @@
-[submodule "vendor/gnim"]
-	path = vendor/gnim
-	url = https://github.com/Aylur/gnim
-[submodule "vendor/ags"]
-	path = vendor/ags
-	url = https://github.com/Aylur/ags
