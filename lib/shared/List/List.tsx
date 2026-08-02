@@ -1,14 +1,13 @@
 import { Gtk } from 'ags/gtk4';
 import { Item } from './types';
 import cn from 'classnames';
-import { createComputed, For } from 'gnim';
+import { For } from 'gnim';
 import { MAX_SCROLLABLE_HEIGHT, SPACING_M } from '../../constants/widget';
 import { Classes, PropertyValue } from '../../types/utils';
 import { toAccessor, updateAccessor } from '../../utils/misc';
 import { Button } from '../buttons';
 import Pango from 'gi://Pango?version=1.0';
 import { DummyWrapper } from '../DummyWrapper';
-import { Spacing } from '../../types/common';
 
 export interface IList<P = object, V = string> {
     items: PropertyValue<Item<P, V>[]>;
@@ -19,7 +18,7 @@ export interface IList<P = object, V = string> {
     itemHalign?: PropertyValue<Gtk.Align>;
     ellipsize?: Pango.EllipsizeMode;
     maxWidthChar?: PropertyValue<number>;
-    classes?: Classes<'root' | 'item'>;
+    classes?: Classes<'root' | 'scrollContainer' | 'item'>;
     onSelect?: (item: Item<P, V>) => void;
 }
 
@@ -37,11 +36,19 @@ export function List<P = object, V = string>(props: IList<P, V>) {
         onSelect
     } = props;
 
-    const rootCss = createComputed((get) => `${get(toAccessor(css))} padding: ${Spacing.S}px;`);
-
     return (
-        <box class={updateAccessor(classes?.root, root => cn('list', root))} vexpand={vexpand} hexpand={hexpand} css={rootCss}>
-            <scrolledwindow
+        <box
+            class={updateAccessor(classes?.root, root => cn('list', root))}
+            vexpand={vexpand}
+            hexpand={hexpand}
+            css={css}
+        >
+            <Gtk.ScrolledWindow
+                class={updateAccessor(classes?.scrollContainer, (scrollContainer, get) => cn(
+                    scrollContainer,
+                    'list-scroll-container',
+                    get(items).length <= 1 && 'list-scroll-container_low-content'
+                ))}
                 maxContentHeight={MAX_SCROLLABLE_HEIGHT}
                 hexpand
                 vexpand
@@ -84,7 +91,7 @@ export function List<P = object, V = string>(props: IList<P, V>) {
                         }}
                     </For>
                 </box>
-            </scrolledwindow>
+            </Gtk.ScrolledWindow>
         </box>
     );
 }

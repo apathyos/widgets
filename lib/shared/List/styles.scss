@@ -6,6 +6,11 @@
     background-color: colors.$bg;
     border: 1px solid colors.$border;
     border-radius: geometry.$border-radius-m;
+    padding: geometry.$padding-s;
+}
+
+.list-scroll-container_low-content {
+    margin-bottom: - geometry.$margin-s;
 }
 
 .list__item {
