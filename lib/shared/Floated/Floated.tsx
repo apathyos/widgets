@@ -19,7 +19,9 @@ export interface IFloated {
     anchorOffset?: PropertyValue<Offset>;
     align?: PropertyValue<Align>;
     placement?: PropertyValue<Placement>;
-    floatContent: () => JSX.Element;
+    floatContent: (args: {
+        toggleOpen: () => void;
+    }) => JSX.Element;
     transitionOptions?: PropertyValue<TransitionOptions>;
     withArrow?: PropertyValue<boolean>;
     classes?: Classes<'arrow'>;
@@ -69,7 +71,6 @@ export function Floated(props: IFloated) {
     });
 
     let contentContainerRef: Gtk.Box | null = null;
-    // let timerRef: Timer | null = null;
 
     toAccessor(isRootMounted).subscribe(() => {
         if (unpackAccessor(isRootMounted) === false) {
@@ -77,6 +78,48 @@ export function Floated(props: IFloated) {
             setIsOpened(false);
         }
     });
+
+    const onWindowVisible = () => {
+        const anchorElement = unpackAccessor(anchorRef);
+        const elementAlign = unpackAccessor(align);
+
+        if (!anchorElement || !contentContainerRef) {
+            return;
+        }
+
+        trackWidgetSurfaceMonitorAttachment(anchorElement, () => {
+            if (!anchorElement || !contentContainerRef) {
+                return;
+            }
+
+            const offset = unpackAccessor(withArrow) ? Offset.XS : unpackAccessor(anchorOffset);
+
+            const { top, left, bottom, right } = getWidgetAbsolutePosition(anchorElement);
+            const anchorGeometry = anchorElement.get_allocation();
+            const contentContainerGeometry = contentContainerRef.get_allocation();
+
+            const elementTop = top + anchorGeometry.height + offset;
+            let elementLeft = left;
+            const elementBottom = bottom - anchorGeometry.height + offset;
+            const elementRight = right - anchorGeometry.width;
+
+            if (elementAlign === Align.START) {
+                elementLeft -= 0;
+            } else if (elementAlign === Align.END) {
+                elementLeft -= anchorGeometry.width;
+            } else {
+                elementLeft -= Math.abs(contentContainerGeometry.width - anchorGeometry.width - 1) / 2;
+            }
+
+            setElementPosition({
+                top: elementTop,
+                left: elementLeft,
+                bottom: elementBottom,
+                right: elementRight
+            });
+            setContentWidth(Math.max(anchorGeometry.width + 1, contentContainerGeometry.width));
+        });
+    };
 
     const toggleOpen = (args?: { shouldOpen?: boolean }) => {
         const shouldOpen = args?.shouldOpen ?? !unpackAccessor(isOpened);
@@ -89,107 +132,24 @@ export function Floated(props: IFloated) {
         }
 
         const anchorElement = unpackAccessor(anchorRef);
-        const elementAlign = unpackAccessor(align);
-        // const popupPlacement = unpackAccessor(placement);
-
-        const offset = unpackAccessor(withArrow) ? Offset.XS : unpackAccessor(anchorOffset);
 
         if (anchorElement) {
-            trackWidgetSurfaceMonitorAttachment(anchorElement, () => {
-                if (!anchorElement || !contentContainerRef) {
-                    return;
-                }
+            setIsOpened(true);
+            setIsRevealed(true);
 
-                const { top, left, bottom, right } = getWidgetAbsolutePosition(anchorElement);
-                const anchorGeometry = anchorElement.get_allocation();
-                const contentContainerGeometry = contentContainerRef.get_allocation();
-
-                const elementTop = top + anchorGeometry.height + offset;
-                let elementLeft = left;
-                const elementBottom = bottom - anchorGeometry.height + offset;
-                const elementRight = right - anchorGeometry.width;
-
-                // if (popupPlacement === Placement.TOP) {
-                //     // elementTop += anchorGeometry.height + offset;
-                // } else if (popupPlacement === Placement.LEFT) {
-
-                // } else if (popupPlacement === Placement.BOTTOM) {
-                //     // elementBottom += anchorGeometry.height + offset;
-                // }
-
-                if (elementAlign === Align.START) {
-                    elementLeft -= 0;
-                } else if (elementAlign === Align.END) {
-                    elementLeft -= anchorGeometry.width;
-                } else {
-                    elementLeft -= Math.abs(contentContainerGeometry.width - anchorGeometry.width - 1) / 2;
-                }
-
-                setElementPosition({
-                    top: elementTop,
-                    left: elementLeft,
-                    bottom: elementBottom,
-                    right: elementRight
-                });
-                setContentWidth(Math.max(anchorGeometry.width + 1, contentContainerGeometry.width));
-            });
+            onOpen?.({ shouldOpen });
         }
-
-        // timerRef?.cancel();
-        // timerRef = timeout(25, () => {
-        //     if (!anchorElement || !contentContainerRef) {
-        //         return;
-        //     }
-
-        //     const { top, left, bottom, right } = getWidgetAbsolutePosition(anchorElement);
-        //     const anchorGeometry = anchorElement.get_allocation();
-        //     const contentContainerGeometry = contentContainerRef.get_allocation();
-
-        //     let elementTop = top + anchorGeometry.height + offset;
-        //     let elementLeft = left;
-        //     let elementBottom = bottom - anchorGeometry.height + offset;
-        //     let elementRight = right - anchorGeometry.width;
-
-        //     if (popupPlacement === Placement.TOP) {
-        //         // elementTop += anchorGeometry.height + offset;
-        //     } else if (popupPlacement === Placement.LEFT) {
-
-        //     } else if (popupPlacement === Placement.BOTTOM) {
-        //         // elementBottom += anchorGeometry.height + offset;
-        //     }
-
-        //     if (elementAlign === Align.START) {
-        //         elementLeft -= 0;
-        //     } else if (elementAlign === Align.END) {
-        //         elementLeft -= anchorGeometry.width;
-        //     } else {
-        //         elementLeft -= Math.abs(contentContainerGeometry.width - anchorGeometry.width - 1) / 2;
-        //     }
-
-        //     setElementPosition({
-        //         top: elementTop,
-        //         left: elementLeft,
-        //         bottom: elementBottom,
-        //         right: elementRight
-        //     });
-        //     setContentWidth(Math.max(anchorGeometry.width + 1, contentContainerGeometry.width));
-        // });
-
-        setIsOpened(true);
-        setIsRevealed(true);
-
-        onOpen?.({ shouldOpen });
     };
 
     const FloatContent = (
-        <box
+        <Gtk.Box
             $={self => (contentContainerRef = self)}
             orientation={contentOrientation}
             hexpand
             css={contentContainerCss}
         >
             <With value={toAccessor(placement)}>
-                {(placement) => placement === Placement.TOP || placement === Placement.LEFT ? floatContent() : null}
+                {(placement) => placement === Placement.TOP || placement === Placement.LEFT ? floatContent({ toggleOpen }) : null}
             </With>
 
             <box homogeneous>
@@ -218,9 +178,12 @@ export function Floated(props: IFloated) {
             </box>
 
             <With value={toAccessor(placement)}>
-                {(placement) => placement === Placement.BOTTOM || placement === Placement.RIGHT ? floatContent() : null}
+                {(placement) => placement === Placement.BOTTOM || placement === Placement.RIGHT
+                    ? floatContent({ toggleOpen })
+                    : null
+                }
             </With>
-        </box>
+        </Gtk.Box>
     );
 
     <Window
@@ -233,9 +196,11 @@ export function Floated(props: IFloated) {
             bottom: elementPosition((v) => v.bottom),
             right: elementPosition((v) => v.right)
         }}
-        layer={Astal.Layer.OVERLAY}
+        layer={Astal.Layer.TOP}
         keymode={Astal.Keymode.ON_DEMAND}
         onActive={({ window }) => !window.isActive && toggleOpen({ shouldOpen: false })}
+        onVisible={onWindowVisible}
+        css={createComputed(get => `opacity: ${get(isOpened) ? '1' : '0.1'};`)}
     >
         <With value={toAccessor(transitionOptions)}>
             {(transitionOptions: TransitionOptions) => transitionOptions.enabled
