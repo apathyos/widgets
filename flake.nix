@@ -62,41 +62,43 @@
       extraPackages = runtimePackages;
     };
   in {
-    packages.${system}.default = pkgs.buildNpmPackage {
-      inherit pname pversion;
+    packages.${system} = {
+      default = pkgs.buildNpmPackage {
+        inherit pname pversion;
 
-      name = pname;
-      src = source;
+        name = pname;
+        src = source;
 
-      npmDeps = pkgs.importNpmLock {
-        npmRoot = source;
+        npmDeps = pkgs.importNpmLock {
+          npmRoot = source;
+        };
+
+        npmConfigHook = pkgs.importNpmLock.npmConfigHook;
+
+        dontNpmBuild = true;
+
+        nativeBuildInputs = [
+          pkgs.wrapGAppsHook3
+          pkgs.gobject-introspection
+          agsCli
+        ];
+
+        buildInputs = runtimePackages;
+
+        installPhase = ''
+          runHook preInstall
+
+          mkdir -p "$out/bin"
+
+          ags bundle ${entry} "$out/bin/${pname}"
+
+          runHook postInstall
+        '';
+
+        postFixup = ''
+          wrapProgram $out/bin/apathyos-widgets --run "${agsPkg}/bin/ags quit --instance apathyos || true"
+        '';
       };
-
-      npmConfigHook = pkgs.importNpmLock.npmConfigHook;
-
-      dontNpmBuild = true;
-
-      nativeBuildInputs = [
-        pkgs.wrapGAppsHook3
-        pkgs.gobject-introspection
-        agsCli
-      ];
-
-      buildInputs = runtimePackages;
-
-      installPhase = ''
-        runHook preInstall
-
-        mkdir -p "$out/bin"
-
-        ags bundle ${entry} "$out/bin/${pname}"
-
-        runHook postInstall
-      '';
-
-      postFixup = ''
-        wrapProgram $out/bin/apathyos-widgets --run "${agsPkg}/bin/ags quit --instance apathyos || true"
-      '';
 
       ags = ags.packages.${system}.default;
     };
