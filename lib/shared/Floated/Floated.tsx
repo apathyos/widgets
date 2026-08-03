@@ -45,6 +45,7 @@ export function Floated(props: IFloated) {
     } = props;
 
     const [isOpened, setIsOpened] = createState(false);
+    const [isVisible, setIsVisible] = createState(false);
     const [isRevealed, setIsRevealed] = createState(false);
     const [elementPosition, setElementPosition] = createState({ top: 0, left: 0, bottom: 0, right: 0 });
     const [contentWidth, setContentWidth] = createState(0);
@@ -118,6 +119,7 @@ export function Floated(props: IFloated) {
                 right: elementRight
             });
             setContentWidth(Math.max(anchorGeometry.width + 1, contentContainerGeometry.width));
+            setIsVisible(true);
         });
     };
 
@@ -126,7 +128,10 @@ export function Floated(props: IFloated) {
 
         if (!shouldOpen) {
             setIsRevealed(false);
-            timeout(unpackAccessor(transitionOptions)?.duration ?? 0, () => setIsOpened(false));
+            timeout(unpackAccessor(transitionOptions)?.duration ?? 0, () => {
+                setIsOpened(false);
+                setIsVisible(false);
+            });
             onOpen?.({ shouldOpen });
             return;
         }
@@ -187,6 +192,7 @@ export function Floated(props: IFloated) {
     );
 
     <Window
+        classes={{ root: updateAccessor(isVisible, isVisible => cn('floated', isVisible && 'floated_visible')) }}
         isVisible={isOpened}
         anchor={anchor}
         canTarget
@@ -200,7 +206,6 @@ export function Floated(props: IFloated) {
         keymode={Astal.Keymode.ON_DEMAND}
         onActive={({ window }) => !window.isActive && toggleOpen({ shouldOpen: false })}
         onVisible={onWindowVisible}
-        css={createComputed(get => `opacity: ${get(isOpened) ? '1' : '0.1'};`)}
     >
         <With value={toAccessor(transitionOptions)}>
             {(transitionOptions: TransitionOptions) => transitionOptions.enabled

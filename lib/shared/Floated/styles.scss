@@ -1,5 +1,13 @@
 @use '../../styles/colors.scss';
 
+.floated {
+    opacity: 0.1;
+
+    &_visible {
+        opacity: 1;
+    }
+}
+
 .floated__arrow {
     &_placement-bottom {
         transform: rotate(180deg);
