@@ -25,3 +25,5 @@ export * from './NotificationGroup';
 export * from './Floated';
 export * from './ProgressOverlay';
 export * from './DotsSpinner';
+export * from './Input';
+export * from './LoaderOverlay';

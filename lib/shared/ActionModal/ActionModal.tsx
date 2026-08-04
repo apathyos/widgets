@@ -1,24 +1,26 @@
 import { Gtk } from 'ags/gtk4';
-import { SPACING_L } from '../../constants/widget';
 import { Classes, PropertyValue } from '../../types/utils';
 import { toAccessor, updateAccessor } from '../../utils/misc';
 import { isJSXElement } from '../../utils/typeguards';
 import { IModal, Modal } from '../Modal';
 import cn from 'classnames';
 import { For } from 'gnim';
-import { Button } from '../buttons';
 import Pango from 'gi://Pango?version=1.0';
-import { Action } from '../../types/common';
+import { ActionModalAction } from './components';
+import { ActionModalAction as ActionModalActionType } from './types';
+import { Spacing } from '@/types/common';
 
 export interface IActionModal extends Omit<IModal, 'children'> {
     summary?: PropertyValue<string> | JSX.Element;
-    actions?: PropertyValue<Action[]>;
+    summaryNaturalHeight?: PropertyValue<boolean>;
+    actions?: PropertyValue<ActionModalActionType[]>;
     classes?: Classes<'title' | 'summary' | 'button' | 'close'> & IModal['classes'];
 }
 
 export function ActionModal(props: IActionModal) {
     const {
         summary,
+        summaryNaturalHeight,
         actions = [],
         classes,
     } = props;
@@ -33,7 +35,7 @@ export function ActionModal(props: IActionModal) {
         >
             <>
                 {summary ? (
-                    <scrolledwindow vexpand hexpand>
+                    <Gtk.ScrolledWindow vexpand hexpand propagateNaturalHeight={summaryNaturalHeight}>
                         {isJSXElement(summary)
                             ? summary
                             : (
@@ -48,25 +50,12 @@ export function ActionModal(props: IActionModal) {
                                 />
                             )
                         }
-                    </scrolledwindow>
+                    </Gtk.ScrolledWindow>
                 ) : null}
 
-                <box class="action-modal-buttons" spacing={SPACING_L} halign={Gtk.Align.END} valign={Gtk.Align.END}>
+                <box class="action-modal-buttons" spacing={Spacing.L} halign={Gtk.Align.END} valign={Gtk.Align.END}>
                     <For each={toAccessor(actions)}>
-                        {(action: Action) => (
-                            <Button
-                                onClick={async () => {
-                                    try {
-                                        await action.onAct();
-                                    } catch {}
-                                }}
-                                classes={{
-                                    root: updateAccessor(classes?.button, button => cn(button, 'action-modal__button'))
-                                }}
-                            >
-                                <label label={action.name} halign={Gtk.Align.CENTER} hexpand />
-                            </Button>
-                        )}
+                        {(action: ActionModalActionType) => <ActionModalAction action={action} classes={classes} />}
                     </For>
                 </box>
             </>

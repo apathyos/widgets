@@ -1,10 +1,10 @@
 import { Gtk } from 'ags/gtk4';
-import { SPACING_L } from '../../constants/widget';
 import { DpmsPopupButton, SystemLockButton, SystemLogoutButton, SystemPowerButton, SystemSuspendButton } from '../../features';
 import { Section } from '../../shared';
 import { Classes, PropertyValue } from '../../types/utils';
 import { updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
+import { Spacing } from '@/types/common';
 
 export interface IStatusPanelControlsSection {
     isRootMounted: PropertyValue<boolean>;
@@ -17,7 +17,7 @@ export function StatusPanelControlsSection(props: IStatusPanelControlsSection) {
     return (
         <Section
             hexpand
-            spacing={SPACING_L}
+            spacing={Spacing.L}
             classes={{
                 root: updateAccessor(classes?.root, (root) => cn(root, 'status-panel-controls-section')),
             }}

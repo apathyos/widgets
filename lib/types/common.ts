@@ -92,7 +92,8 @@ export type ListItem<P = object, V = string> = {
 
 export type Dispose = () => void;
 
-export type Resolve = () => void;
+export type Resolve<T = void> = (value: T) => void;
+export type Reject<T = unknown> = (reason: T) => void;
 
 export type Action<P = object, V = string> = ListItem<P, V> & {
     onAct: () => (void | Promise<void>);

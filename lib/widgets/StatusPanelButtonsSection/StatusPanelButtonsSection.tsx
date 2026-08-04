@@ -3,7 +3,6 @@ import { Section } from '../../shared';
 import { Classes, PropertyValue } from '../../types/utils';
 import { updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
-import { SPACING_L } from '../../constants/widget';
 import {
     BluetoothDropdownButton,
     CpuProfileSwitcherDropdownButton,
@@ -11,6 +10,7 @@ import {
     VpnDropdownButton,
     WifiDropdownButton
 } from '../../features';
+import { Spacing } from '@/types/common';
 
 export interface IStatusPanelButtonsSection {
     isRootMounted: PropertyValue<boolean>;
@@ -26,12 +26,12 @@ export function StatusPanelButtonsSection(props: IStatusPanelButtonsSection) {
                 root: updateAccessor(classes?.root, (root) => cn(root, 'status-panel-buttons-section')),
             }}
         >
-            <box orientation={Gtk.Orientation.VERTICAL} spacing={SPACING_L}>
-                <box spacing={SPACING_L}>
+            <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.L}>
+                <box spacing={Spacing.L}>
                     <WifiDropdownButton isRootMounted={isRootMounted} />
                     <BluetoothDropdownButton isRootMounted={isRootMounted} />
                 </box>
-                <box spacing={SPACING_L}>
+                <box spacing={Spacing.L}>
                     <VpnDropdownButton isRootMounted={isRootMounted} />
                     {/*<GpuSwitcherDropdownButton isRootMounted={isRootMounted} />*/}
                     <CpuProfileSwitcherDropdownButton isRootMounted={isRootMounted} />

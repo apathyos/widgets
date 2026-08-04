@@ -6,8 +6,8 @@ import { Classes, PartialSome, PropertyValue } from '../../types/utils';
 import { Gtk } from 'ags/gtk4';
 import { isJSXElement } from '../../utils/typeguards';
 import { SymbolButton } from '../buttons';
-import { SPACING_M, SPACING_XL } from '../../constants/widget';
 import Pango from 'gi://Pango?version=1.0';
+import { Spacing } from '@/types/common';
 
 export interface IToast extends Omit<PartialSome<IModal, 'children'>, 'orientation' | 'spacing' | 'classes'> {
     title?: PropertyValue<string> | JSX.Element;
@@ -32,9 +32,9 @@ export function Toast(props: IToast) {
                 root: updateAccessor(classes?.root, (root, get) => cn(root, 'toast', get(isExpanded) && 'toast_expanded'))
             }}
             orientation={Gtk.Orientation.VERTICAL}
-            spacing={SPACING_XL}
+            spacing={Spacing.XL}
         >
-            <box hexpand spacing={showHeader(v => v ? SPACING_M : SPACING_XL)}>
+            <box hexpand spacing={showHeader(v => v ? Spacing.M : Spacing.XL)}>
                 <With value={toAccessor(expandable)}>
                     {expandable => expandable ? (
                         <SymbolButton
@@ -52,12 +52,12 @@ export function Toast(props: IToast) {
                     ) : null}
                 </With>
 
-                <box orientation={Gtk.Orientation.VERTICAL} spacing={SPACING_XL}>
+                <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.XL}>
                     <With value={showHeader}>
                         {showHeader => showHeader ? (
                             <box
                                 hexpand
-                                spacing={SPACING_M}
+                                spacing={Spacing.M}
                             >
                                 {title ? (
                                     isJSXElement(title)

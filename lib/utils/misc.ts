@@ -91,3 +91,11 @@ export const getStringFromBytes = (bytes: GLib.Bytes) => {
 
     return new TextDecoder('utf-8').decode(data);
 };
+
+export const getUnpackedNumber = (value: unknown): number => {
+    if (value instanceof GLib.Variant) {
+        return Number(value.deepUnpack());
+    }
+
+    return Number(value);
+};

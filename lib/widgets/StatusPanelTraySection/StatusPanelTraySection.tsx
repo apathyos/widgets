@@ -7,7 +7,7 @@ import { TrayType } from '../../types/tray';
 import { StatusPanelTraySectionBody } from './StatusPanelTraySectionBody';
 import { StatusPanelTraySectionHeader } from './StatusPanelTraySectionHeader';
 import { Gtk } from 'ags/gtk4';
-import { SPACING_S } from '../../constants/widget';
+import { Spacing } from '@/types/common';
 
 export interface IStatusPanelTraySection {
     classes?: Classes<'root' | 'body'>;
@@ -25,7 +25,7 @@ export function StatusPanelTraySection(props: IStatusPanelTraySection) {
                 root: updateAccessor(classes?.root, (root) => cn(root, 'status-panel-tray-section')),
             }}
         >
-            <box orientation={Gtk.Orientation.VERTICAL} spacing={SPACING_S}>
+            <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.S}>
                 <StatusPanelTraySectionHeader activeTray={activeTray} setActiveTray={setActiveTray} />
                 <Section
                     classes={{

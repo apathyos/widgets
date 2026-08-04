@@ -1,8 +1,4 @@
 export const MAX_SCROLLABLE_HEIGHT = 250;
-export const SPACING_S = 5;
-export const SPACING_M = 10;
-export const SPACING_L = 15;
-export const SPACING_XL = 25;
 export const TRANSITION_FAST = 200;
 export const TRANSITION_NORMAL = 500;
 export const TRANSITION_SLOW = 1000;

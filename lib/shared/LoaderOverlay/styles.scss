@@ -1,0 +1,5 @@
+.loader-overlay {
+    &_hidden-content *:not(loader-overlay__overlay) {
+        color: transparent;
+    }
+}

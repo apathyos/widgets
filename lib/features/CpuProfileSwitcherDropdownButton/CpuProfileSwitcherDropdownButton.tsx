@@ -22,9 +22,11 @@ export function CpuProfileSwitcherDropdownButton(props: ICpuProfileSwitcherDropd
     const [icon, setIcon] = createState(cpu.getProfileIcon({ profile: unpackAccessor(activeProfile) }));
 
     const refreshState = async () => {
+        const profile = await cpu.getCurrentProfile();
+
         setCpuProfiles(await cpu.getProfiles());
-        setActiveProfile(await cpu.getCurrentProfile());
-        setIcon(cpu.getProfileIcon({ profile: unpackAccessor(activeProfile) }));
+        setActiveProfile(profile);
+        setIcon(cpu.getProfileIcon({ profile }));
     };
 
     createEffect(refreshState);

@@ -3,6 +3,7 @@ import { Astal } from 'ags/gtk4';
 export enum WindowType {
     NOTIFICATION = 'notification',
     ACTION_MODAL = 'action-modal',
+    INPUT_MODAL = 'input-modal',
 }
 
 export type WindowId = string;

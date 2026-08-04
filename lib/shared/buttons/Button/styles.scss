@@ -13,3 +13,11 @@
         background-color: colors.$bg-alt-hover;
     }
 }
+
+.button_disabled {
+    background-color: colors.$bg-alt-disabled;
+
+    &:hover {
+        background-color: colors.$bg-alt-disabled;
+    }
+}

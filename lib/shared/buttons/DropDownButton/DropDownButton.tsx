@@ -4,7 +4,7 @@ import { Button, IButton } from '../..';
 import { Gtk } from 'ags/gtk4';
 import cn from 'classnames';
 import { Classes, PropertyValue } from '../../../types/utils';
-import { toAccessor, updateAccessor } from '../../../utils/misc';
+import { toAccessor, unpackAccessor, updateAccessor } from '../../../utils/misc';
 import { IFloated } from '../../Floated/Floated';
 import { Align, Offset, Placement, Transition } from '../../../types/common';
 import { TransitionOptions } from '../../../types/widget';
@@ -17,6 +17,7 @@ export interface IDropDownButton extends Omit<IButton, 'classes'> {
     isRootMounted?: PropertyValue<boolean>;
     listItemMaxWidthChar?: PropertyValue<number>;
     transitionDuration?: PropertyValue<Transition>;
+    closeOnSelect?: PropertyValue<boolean>;
     classes?: Classes<'root' | 'iconButton'> & {
         buttonClasses?: IButton['classes'];
     };
@@ -30,6 +31,7 @@ export function DropDownButton(props: IDropDownButton) {
         listIcon,
         listItemMaxWidthChar,
         transitionDuration = Transition.NORMAL,
+        closeOnSelect,
         classes,
         onToggle,
         onSelect,
@@ -45,7 +47,7 @@ export function DropDownButton(props: IDropDownButton) {
     }));
 
     const dropdownButtonClass = createComputed(
-        (get) => cn('dropdown-button', get(isOpened) ? ' dropdown-button_opened' : ''),
+        (get) => cn('dropdown-button', get(isOpened) ? 'dropdown-button_opened' : ''),
     );
 
     const onOpen: IFloated['onOpen'] = (args) => {
@@ -65,7 +67,16 @@ export function DropDownButton(props: IDropDownButton) {
                 placement={Placement.BOTTOM}
                 isRootMounted={props.isRootMounted}
                 transitionOptions={transitionOptions}
-                floatContent={() => <List items={items} onSelect={onSelect} maxWidthChar={listItemMaxWidthChar} />}
+                floatContent={({ toggleOpen }) => (
+                    <List
+                        items={items}
+                        onSelect={(...args) => {
+                            onSelect?.(...args);
+                            unpackAccessor(closeOnSelect) && toggleOpen();
+                        }}
+                        maxWidthChar={listItemMaxWidthChar}
+                    />
+                )}
             >
                 {({ toggleOpen }) => (
                     <>

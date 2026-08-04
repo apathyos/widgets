@@ -3,8 +3,6 @@ import {
     NOTIFICATION_TOAST_MAX_BODY_WIDTH_CHARS,
     NOTIFICATION_TOAST_MAX_SUMMARY_WIDTH_CHARS,
     NOTIFICATION_TOAST_MAX_TITLE_WIDTH_CHARS,
-    SPACING_L,
-    SPACING_S
 } from '../../../constants/widget';
 import { AlbumCoverSize } from '../../../types/albumCover';
 import { PropertyValue } from '../../../types/utils';
@@ -14,6 +12,7 @@ import { SongMetaLabel } from '../../SongMetaLabel';
 import { INotificationToastBase, NotificationToastVariant } from '../types';
 import { With } from 'gnim';
 import { toAccessor } from '../../../utils/misc';
+import { Spacing } from '@/types/common';
 
 export interface INotificationMultimediaToast extends Omit<INotificationToastBase, 'title' | 'summary' | 'body'> {
     variant: NotificationToastVariant.MULTIMEDIA;
@@ -26,9 +25,9 @@ export function NotificationMulimediaToast(props: INotificationMultimediaToast) 
     return (
         <Notification
             body={
-                <box orientation={Gtk.Orientation.HORIZONTAL} spacing={SPACING_L}>
+                <box orientation={Gtk.Orientation.HORIZONTAL} spacing={Spacing.L}>
                     <AlbumCover file={image} size={AlbumCoverSize.S} />
-                    <box orientation={Gtk.Orientation.VERTICAL} spacing={SPACING_S}>
+                    <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.S}>
                         <SongMetaLabel label={'label'} />
                         <With value={toAccessor('album')}>{
                             (album: string) => album && <SongMetaLabel label={album} />

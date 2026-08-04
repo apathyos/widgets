@@ -3,7 +3,7 @@ import { toAccessor, updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
 import { SymbolButton } from '../buttons';
 import { Gtk } from 'ags/gtk4';
-import { SPACING_XL } from '../../constants/widget';
+import { Spacing } from '@/types/common';
 
 export interface IPlayerControls {
     isPaused?: PropertyValue<boolean>;
@@ -20,7 +20,7 @@ export function PlayerControls(props: IPlayerControls) {
         <box
             class={updateAccessor(classes?.root, (root) => cn(root, 'player-controls'))}
             hexpand
-            spacing={SPACING_XL}
+            spacing={Spacing.XL}
             halign={Gtk.Align.BASELINE_CENTER}
         >
             <SymbolButton

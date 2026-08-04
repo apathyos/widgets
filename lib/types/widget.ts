@@ -35,3 +35,8 @@ export type TransitionOptions = {
     type?: Gtk.RevealerTransitionType;
     duration?: number;
 };
+
+export type ElementInfoText = {
+    isPresent: boolean;
+    text?: string;
+};

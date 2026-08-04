@@ -18,8 +18,8 @@ import {
 } from '../../features';
 import { Section, SectionBar } from '../../shared';
 import { Date } from '../../features/Date/Date';
-import { SPACING_L, SPACING_M, SPACING_S } from '../../constants/widget';
 import { StatusPanelButton } from '../../features/StatusPanelButton';
+import { Spacing } from '@/types/common';
 
 export interface ITopBar {
     monitor: Gdk.Monitor;
@@ -31,7 +31,7 @@ export function TopBar(props: ITopBar) {
     return (
         <SectionBar
             left={[
-                <box spacing={SPACING_L}>
+                <box spacing={Spacing.L}>
                     <Worskpaces monitor={monitor} />
                     <ActiveWindowTitle monitor={monitor} />
                 </box>
@@ -42,7 +42,7 @@ export function TopBar(props: ITopBar) {
                 </Section>
             ]}
             right={[
-                <box spacing={SPACING_M}>
+                <box spacing={Spacing.M}>
                     <Section>
                         <KeyboardButton />
                     </Section>
@@ -50,7 +50,7 @@ export function TopBar(props: ITopBar) {
                         <WifiButton />
                         <BluetoothButton />
                     </Section>
-                    <Section spacing={SPACING_S}>
+                    <Section spacing={Spacing.S}>
                         <ScreenRecordButton />
                         <SoundOutputButton />
                         <DontDisturbButton />
@@ -58,7 +58,7 @@ export function TopBar(props: ITopBar) {
                         <NightShiftButton />
                         <BatteryButton />
                     </Section>
-                    <Section spacing={SPACING_L}>
+                    <Section spacing={Spacing.L}>
                         <CpuClock />
                         <CpuTemp />
                         <MemoryUsage />

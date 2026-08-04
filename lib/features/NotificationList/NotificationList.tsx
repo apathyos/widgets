@@ -3,11 +3,11 @@ import { Notification } from '../../models/Notification';
 import { NotificationGroup } from '../../shared';
 import Notifd from 'gi://AstalNotifd?version=0.1';
 import { Gtk } from 'ags/gtk4';
-import { SPACING_L } from '../../constants/widget';
 import { unpackAccessor, updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
 import { Classes } from '../../types/utils';
 import { INotification } from '../../types/notification';
+import { Spacing } from '@/types/common';
 
 const NotificationService = Notifd.get_default();
 
@@ -48,7 +48,7 @@ export function NotificationList(props: INotificationList) {
                     (root, get) => cn(root, 'notification-list', !get(notifications).length && 'notification-list_empty')
                 )}
                 orientation={Gtk.Orientation.VERTICAL}
-                spacing={SPACING_L}
+                spacing={Spacing.L}
             >
                 <For each={notificationsGroups}>
                     {(group) => (

@@ -1,9 +1,9 @@
 import cn from 'classnames';
 import { Classes, PropertyValue } from '../../types/utils';
 import { updateAccessor } from '../../utils/misc';
-import { SPACING_S } from '../../constants/widget';
 import { Icon, IIcon } from '../Icon/Icon';
 import { ITitle, Title } from '../Title';
+import { Spacing } from '@/types/common';
 
 export interface IIconLabel {
     icon: IIcon['label'];
@@ -13,7 +13,7 @@ export interface IIconLabel {
 }
 
 export function IconLabel(props: IIconLabel) {
-    const { icon, label, spacing = SPACING_S, classes } = props;
+    const { icon, label, spacing = Spacing.S, classes } = props;
 
     return (
         <box class={updateAccessor(classes?.root, (root) => cn(root, 'icon-label'))} spacing={spacing}>

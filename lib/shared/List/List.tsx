@@ -2,12 +2,13 @@ import { Gtk } from 'ags/gtk4';
 import { Item } from './types';
 import cn from 'classnames';
 import { For } from 'gnim';
-import { MAX_SCROLLABLE_HEIGHT, SPACING_M } from '../../constants/widget';
+import { MAX_SCROLLABLE_HEIGHT } from '../../constants/widget';
 import { Classes, PropertyValue } from '../../types/utils';
 import { toAccessor, updateAccessor } from '../../utils/misc';
 import { Button } from '../buttons';
 import Pango from 'gi://Pango?version=1.0';
 import { DummyWrapper } from '../DummyWrapper';
+import { Spacing } from '@/types/common';
 
 export interface IList<P = object, V = string> {
     items: PropertyValue<Item<P, V>[]>;
@@ -68,7 +69,7 @@ export function List<P = object, V = string>(props: IList<P, V>) {
                                         }}
                                         onClick={() => onSelect?.(item)}
                                         hexpand
-                                        spacing={SPACING_M}
+                                        spacing={Spacing.M}
                                     >
                                         {item.icon}
 

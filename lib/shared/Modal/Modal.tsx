@@ -10,11 +10,11 @@ export interface IModal extends IModalBase {
 }
 
 export function Modal(props: IModal) {
-    const { classes } = props;
+    const { spacing, classes, ...baseProps } = props;
 
     return (
         <ModalBase
-            {...props}
+            {...baseProps}
             classes={{
                 ...classes,
                 root: updateAccessor(classes?.root, root => cn(root, 'modal'))
@@ -22,7 +22,7 @@ export function Modal(props: IModal) {
         >
             <box
                 orientation={Gtk.Orientation.VERTICAL}
-                spacing={Spacing.XL}
+                spacing={spacing ?? Spacing.XL}
                 class="modal-content-container"
                 hexpand
                 vexpand

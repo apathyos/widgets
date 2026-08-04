@@ -4,10 +4,10 @@ import { toAccessor, unpackAccessor, updateAccessor } from '../../utils/misc';
 import { INotification } from '../../types/notification';
 import { createComputed, createState, For, With } from 'gnim';
 import { Notification } from '../Notification/Notification';
-import { SPACING_M } from '../../constants/widget';
 import { Gtk } from 'ags/gtk4';
 import { SymbolButton } from '../buttons';
 import Pango from 'gi://Pango?version=1.0';
+import { Spacing } from '@/types/common';
 
 export interface INotificationGroup {
     title: PropertyValue<string>;
@@ -48,7 +48,7 @@ export function NotificationGroup(props: INotificationGroup) {
             )}
             orientation={Gtk.Orientation.VERTICAL}
         >
-            <box class="notification-group__header" spacing={SPACING_M} hexpand>
+            <box class="notification-group__header" spacing={Spacing.M} hexpand>
                 <SymbolButton
                     onClick={() => {
                         const shouldExpand = !unpackAccessor(isExpanded);
@@ -110,7 +110,7 @@ export function NotificationGroup(props: INotificationGroup) {
             >
                 <box
                     orientation={Gtk.Orientation.VERTICAL}
-                    spacing={SPACING_M}
+                    spacing={Spacing.M}
                     vexpand={false}
                 >
                     <For each={toAccessor(visibleNotifications)}>

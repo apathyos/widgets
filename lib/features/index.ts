@@ -33,3 +33,4 @@ export * from './DpmsPopupButton';
 export * from './CpuProfileSwitcherDropdownButton';
 export * from './WindowFactory';
 export * from './NotificationWindow';
+export * from './InputModal';

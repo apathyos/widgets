@@ -1,3 +1,4 @@
+import GLib from 'gi://GLib';
 import { CpuProfile, GpuMode } from '../types/system';
 
 export const toGpuMode = (mode: string) => {
@@ -23,4 +24,25 @@ export const getSortedCpuProfilesList = (profiles: CpuProfile[]) => {
     };
 
     return profiles.toSorted((a, b) => weights[a] - weights[b]);
+};
+
+export const getXDGSessionId = () => {
+    const sessionId = GLib.getenv('XDG_SESSION_ID');
+
+    if (!sessionId) {
+        throw new Error(
+            'XDG_SESSION_ID is missing; cannot determine the logind session',
+        );
+    }
+
+    return sessionId;
+};
+
+export const getSystemLocale = () => {
+    return (
+        GLib.getenv('LC_ALL') ??
+        GLib.getenv('LC_MESSAGES') ??
+        GLib.getenv('LANG') ??
+        'C'
+    );
 };

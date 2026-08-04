@@ -3,7 +3,7 @@ import { Classes, PropertyValue } from '../../../types/utils';
 import { updateAccessor } from '../../../utils/misc';
 import { DropDownButton, IDropDownButton } from '../DropDownButton';
 import cn from 'classnames';
-import { SPACING_L } from '../../../constants/widget';
+import { Spacing } from '@/types/common';
 
 export interface IIconDropDownButton extends Omit<IDropDownButton, 'children'> {
     icon: PropertyValue<string>;
@@ -25,7 +25,7 @@ export function IconDropDownButton(props: IIconDropDownButton) {
                 },
             }}
         >
-            <box spacing={SPACING_L}>
+            <box spacing={Spacing.L}>
                 <label
                     class={updateAccessor(classes?.icon, (icon) => cn(icon, 'icon-dropdown-button__icon'))}
                     label={icon}

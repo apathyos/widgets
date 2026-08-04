@@ -2,8 +2,8 @@ import { Section } from '../../shared';
 import { Classes } from '../../types/utils';
 import { updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
-import { SPACING_L } from '../../constants/widget';
 import { DontDisturbButton, SoundOutputButton } from '../../features';
+import { Spacing } from '@/types/common';
 
 export interface IStatusPanelTogglersSection {
     classes?: Classes<'root'>;
@@ -18,7 +18,7 @@ export function StatusPanelTogglersSection(props: IStatusPanelTogglersSection) {
                 root: updateAccessor(classes?.root, (root) => cn(root, 'status-panel-togglers-section')),
             }}
         >
-            <box spacing={SPACING_L}>
+            <box spacing={Spacing.L}>
                 <DontDisturbButton classes={{ root: 'status-panel-togglers-section__button' }} />
                 <SoundOutputButton classes={{ root: 'status-panel-togglers-section__button' }} />
             </box>

@@ -1,0 +1,22 @@
+@use '../../styles/fonts.scss';
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+
+.input__field {
+    font-family: fonts.$font-family;
+    outline-color: colors.$bg-alt-hover;
+    min-height: geometry.$input-size-m;
+}
+
+.input__field_error {
+    outline-color: colors.$red;
+}
+
+.input__info-text {
+    padding-bottom: geometry.$padding-xs;
+    opacity: 0;
+
+    &_visible {
+        opacity: 1;
+    }
+}

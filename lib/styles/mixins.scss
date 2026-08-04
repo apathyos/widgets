@@ -33,15 +33,16 @@
     $spacing: null;
 
     @if $size == "xs" {
-        $dot-size: 5px;
-        $spacing: 3px;
+        $dot-size: 3px;
+        $spacing: 2px;
     } @else if $size == "s" {
-        $dot-size: 10px;
-        $spacing: 8px;
+        $dot-size: 7px;
+        $spacing: 5px;
     }
 
     min-width: $dot-size;
     min-height: $dot-size;
+    transform: translateX(-($dot-size * 2));
     box-shadow:
         ($dot-size + $spacing) 0 colors.$bg-alt,
         (($dot-size + $spacing) * 2) 0 colors.$bg-alt;

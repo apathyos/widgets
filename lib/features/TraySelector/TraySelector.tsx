@@ -5,7 +5,7 @@ import { toAccessor, updateAccessor } from '../../utils/misc';
 import { SymbolButton } from '../../shared';
 import { Classes, PropertyValue } from '../../types/utils';
 import cn from 'classnames';
-import { SPACING_M } from '../../constants/widget';
+import { Spacing } from '@/types/common';
 
 export interface ITraySelector {
     activeTray: PropertyValue<TrayType>;
@@ -32,7 +32,7 @@ export function TraySelector(props: ITraySelector) {
         //     }}
         //     onSelect={item => onSelect(item.value)}
         // />
-        <box class={updateAccessor(classes?.root, (root) => cn(root, 'tray-selector'))} spacing={SPACING_M}>
+        <box class={updateAccessor(classes?.root, (root) => cn(root, 'tray-selector'))} spacing={Spacing.M}>
             {trays.map(({ value, Icon }) => (
                 <SymbolButton
                     classes={{

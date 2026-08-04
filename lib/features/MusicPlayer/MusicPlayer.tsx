@@ -4,12 +4,11 @@ import { Mpris } from '../../models/Mpris';
 import MprisModule from 'gi://AstalMpris?version=0.1';
 import { createBinding, createComputed, With } from 'gnim';
 import { AlbumCoverSize } from '../../types/albumCover';
-import { SPACING_M, SPACING_S } from '../../constants/widget';
 import { Classes } from '../../types/utils';
 import cn from 'classnames';
 import { unpackAccessor, updateAccessor } from '../../utils/misc';
 import { execution } from '@apathoid/utils';
-import { Delay } from '../../types/common';
+import { Delay, Spacing } from '../../types/common';
 
 export interface IMusicPlayer {
     classes?: Classes<'root'>;
@@ -54,9 +53,9 @@ export function MusicPlayer(props: IMusicPlayer) {
                         orientation={Gtk.Orientation.VERTICAL}
                         hexpand
                     >
-                        <box visible={isPlayerAvailable} orientation={Gtk.Orientation.HORIZONTAL} spacing={SPACING_M}>
+                        <box visible={isPlayerAvailable} orientation={Gtk.Orientation.HORIZONTAL} spacing={Spacing.M}>
                             <AlbumCover file={coverArt} size={AlbumCoverSize.M} />
-                            <box orientation={Gtk.Orientation.VERTICAL} spacing={SPACING_S}>
+                            <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.S}>
                                 <SongMetaLabel label={title} />
                                 <With value={album}>
                                     {album => album && <SongMetaLabel label={album} />}
