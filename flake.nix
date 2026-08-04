@@ -34,6 +34,16 @@
     source = pkgs.lib.cleanSource ./.;
     agsPkg = ags.packages.${system}.default;
 
+    # pkexec shim for correct work in dev shell
+    pkexecShim = pkgs.writeShellScriptBin "pkexec" ''
+        if [[ ! -x /run/wrappers/bin/pkexec ]]; then
+          echo "NixOS pkexec wrapper is unavailable" >&2
+          exit 127
+        fi
+
+        exec /run/wrappers/bin/pkexec "$@"
+      '';
+
     astalPackages = with ags.packages.${system}; [
       io
       astal4
@@ -59,7 +69,7 @@
     agsCli = ags.packages.${system}.default;
 
     agsDev = agsCli.override {
-      extraPackages = runtimePackages;
+      extraPackages = runtimePackages ++ [pkgs.polkit.out];
     };
   in {
     packages.${system} = {
@@ -106,6 +116,7 @@
     devShells.${system}.default = pkgs.mkShell {
       packages = [
         agsDev
+        pkexecShim
         pkgs.glib
         pkgs.pkg-config
         pkgs.gobject-introspection
