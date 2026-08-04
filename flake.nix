@@ -48,7 +48,6 @@
       io
       astal4
       apps
-      auth
       battery
       mpris
       notifd
@@ -64,12 +63,13 @@
         pkgs.libadwaita
         pkgs.libsoup_3
         pkgs.glib-networking
+        pkgs.polkit.out
       ];
 
     agsCli = ags.packages.${system}.default;
 
     agsDev = agsCli.override {
-      extraPackages = runtimePackages ++ [pkgs.polkit.out];
+      extraPackages = runtimePackages;
     };
   in {
     packages.${system} = {
