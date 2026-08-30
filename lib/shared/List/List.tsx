@@ -1,98 +1,41 @@
-import { Gtk } from 'ags/gtk4';
-import { Item } from './types';
+import { updateAccessor } from '@/utils/misc';
+import { IListBase, ListBase } from '../base/ListBase';
+import { GetListItemData, Item } from '../base/ListItemBase/types';
+import { ListItem } from '../ListItem';
 import cn from 'classnames';
-import { For } from 'gnim';
-import { MAX_SCROLLABLE_HEIGHT } from '../../constants/widget';
-import { Classes, PropertyValue } from '../../types/utils';
-import { toAccessor, updateAccessor } from '../../utils/misc';
-import { Button } from '../buttons';
+import { PropertyValue } from '@/types/utils';
+import { Gtk } from 'ags/gtk4';
 import Pango from 'gi://Pango?version=1.0';
-import { DummyWrapper } from '../DummyWrapper';
 import { Spacing } from '@/types/common';
 
-export interface IList<P = object, V = string> {
-    items: PropertyValue<Item<P, V>[]>;
-    orientation?: Gtk.Orientation;
-    css?: PropertyValue<string>;
-    vexpand?: PropertyValue<boolean>;
-    hexpand?: PropertyValue<boolean>;
+export interface IList<P = object, I extends Item<P> = Item<P>> extends Omit<IListBase, 'render'> {
     itemHalign?: PropertyValue<Gtk.Align>;
     ellipsize?: Pango.EllipsizeMode;
     maxWidthChar?: PropertyValue<number>;
-    classes?: Classes<'root' | 'scrollContainer' | 'item'>;
-    onSelect?: (item: Item<P, V>) => void;
+    getItem: GetListItemData<P, I>;
 }
 
-export function List<P = object, V = string>(props: IList<P, V>) {
+export function List<P = object, I extends Item<P> = Item<P>>(props: IList<P, I>) {
     const {
-        items,
-        orientation = Gtk.Orientation.VERTICAL,
-        vexpand,
-        hexpand,
-        itemHalign = Gtk.Align.START,
-        ellipsize = Pango.EllipsizeMode.MIDDLE,
-        maxWidthChar = 15,
-        css = '',
+        values,
+        spacing = Spacing.M,
         classes,
-        onSelect
+        getItem,
     } = props;
 
     return (
-        <box
-            class={updateAccessor(classes?.root, root => cn('list', root))}
-            vexpand={vexpand}
-            hexpand={hexpand}
-            css={css}
-        >
-            <Gtk.ScrolledWindow
-                class={updateAccessor(classes?.scrollContainer, (scrollContainer, get) => cn(
+        <ListBase
+            {...props}
+            spacing={spacing}
+            render={value => <ListItem item={getItem(value)} />}
+            classes={{
+                root: updateAccessor(classes?.root, root => cn(root, 'list')),
+                scrollContainer: updateAccessor(classes?.scrollContainer, (scrollContainer, get) => cn(
                     scrollContainer,
                     'list-scroll-container',
-                    get(items).length <= 1 && 'list-scroll-container_low-content'
-                ))}
-                maxContentHeight={MAX_SCROLLABLE_HEIGHT}
-                hexpand
-                vexpand
-                propagate_natural_height
-                propagate_natural_width
-            >
-                <box orientation={orientation}>
-                    <For each={toAccessor(items)}>
-                        {(item: Item<P, V>) => {
-                            const Wrapper = item.wrapper || DummyWrapper;
-
-                            return (
-                                <Wrapper item={item}>
-                                    <Button
-                                        classes={{
-                                            root: updateAccessor(classes?.item, item => cn(item, 'list__item', 'list-item'))
-                                        }}
-                                        onClick={() => onSelect?.(item)}
-                                        hexpand
-                                        spacing={Spacing.M}
-                                    >
-                                        {item.icon}
-
-                                        {item.component || (
-                                            <label
-                                                label={item.name}
-                                                ellipsize={ellipsize}
-                                                maxWidthChars={maxWidthChar}
-                                                halign={itemHalign}
-                                                hexpand
-                                            />
-                                        )}
-
-                                        {item.isActive && (
-                                            <label label="" class="list-item__active-icon" halign={Gtk.Align.END} />
-                                        )}
-                                    </Button>
-                                </Wrapper>
-                            );
-                        }}
-                    </For>
-                </box>
-            </Gtk.ScrolledWindow>
-        </box>
+                    get(values).length <= 1 && 'list-scroll-container_low-content'
+                ))
+            }}
+        />
     );
 }

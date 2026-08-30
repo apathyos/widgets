@@ -1,19 +1,13 @@
 @use '../../styles/colors.scss';
 @use '../../styles/geometry.scss';
-@use '../../styles/animation.scss';
 
 .list {
     background-color: colors.$bg;
     border: 1px solid colors.$border;
     border-radius: geometry.$border-radius-m;
-    padding: geometry.$padding-s;
+    padding: geometry.$padding-m geometry.$padding-s;
 }
 
 .list-scroll-container_low-content {
-    margin-bottom: - geometry.$margin-s;
-}
-
-.list__item {
-    margin: geometry.$margin-s 0;
-    padding-right: geometry.$padding-l;
+    margin-bottom: - geometry.$margin-l - 2px;
 }

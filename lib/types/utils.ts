@@ -1,13 +1,15 @@
 import { Accessor } from 'gnim';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Any = any;
+
 export type PropertyValue<T> = T | Accessor<T>;
 
 export type Classes<T extends string> = {
     [K in T]?: PropertyValue<string>;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Children = any;
+export type Children = Any;
 
 export type DeepPartial<T extends object> = {
     [K in keyof T]?: Required<T>[K] extends object ? DeepPartial<Required<T>[K]> : T[K] | undefined;
@@ -29,16 +31,22 @@ export type UnpackAccessorProps<T extends object, P extends keyof T> = {
 };
 
 export type Reactive<T> = T extends object ? {
-    [K in keyof T]: Accessor<NonNullable<T[K]>>;
-} : Accessor<T>;
+    [K in keyof T]: PropertyValue<NonNullable<T[K]>>;
+} : PropertyValue<T>;
+
+export type ReactiveSome<T extends object, K extends keyof T> = {
+    [P in keyof T]: P extends K ? PropertyValue<NonNullable<T[P]>> : T[P];
+};
+
+export type ReactiveExcept<T extends object, K extends keyof T> = {
+    [P in keyof T]: P extends K ? T[P] : PropertyValue<NonNullable<T[P]>>;
+};
 
 export type Primitive = string | number | boolean | null;
 
 export type AnyFunction =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    | ((...args: any[]) => unknown)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    | (abstract new (...args: any[]) => object);
+    | ((...args: Any[]) => unknown)
+    | (abstract new (...args: Any[]) => object);
 
 export type UnSerializable =
     | undefined
@@ -67,8 +75,7 @@ type SerializableObject<T extends object> = {
 export type Serializable<T> =
     IsAny<T> extends true
         ? never
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        : T extends { toJSON(...args: any[]): infer Result }
+        : T extends { toJSON(...args: Any[]): infer Result }
             ? Serializable<Result>
             : T extends Primitive
                 ? T
