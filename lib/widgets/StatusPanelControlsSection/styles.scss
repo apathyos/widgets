@@ -4,7 +4,7 @@
 
 .status-panel-controls-section {
     background-color: colors.$bg;
-    padding: geometry.$padding-m;
+    padding: geometry.$padding-m geometry.$padding-s;
 }
 
 .status-panel-controls-section__button {

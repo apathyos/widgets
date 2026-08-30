@@ -28,13 +28,13 @@ export function StatusPanelButtonsSection(props: IStatusPanelButtonsSection) {
         >
             <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.L}>
                 <box spacing={Spacing.L}>
-                    <WifiDropdownButton isRootMounted={isRootMounted} />
-                    <BluetoothDropdownButton isRootMounted={isRootMounted} />
+                    <WifiDropdownButton isRootMounted={isRootMounted} hexpand />
+                    <BluetoothDropdownButton isRootMounted={isRootMounted} hexpand />
                 </box>
                 <box spacing={Spacing.L}>
-                    <VpnDropdownButton isRootMounted={isRootMounted} />
+                    <VpnDropdownButton isRootMounted={isRootMounted} hexpand />
                     {/*<GpuSwitcherDropdownButton isRootMounted={isRootMounted} />*/}
-                    <CpuProfileSwitcherDropdownButton isRootMounted={isRootMounted} />
+                    <CpuProfileSwitcherDropdownButton isRootMounted={isRootMounted} hexpand />
                 </box>
             </box>
         </Section>

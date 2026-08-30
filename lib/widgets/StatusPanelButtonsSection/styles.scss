@@ -2,6 +2,6 @@
 @use '../../styles/geometry.scss';
 
 .status-panel-buttons-section {
-    background-color: colors.$bg-ternary;
-    padding: geometry.$padding-m;
+    background-color: colors.$bg;
+    padding: geometry.$padding-m geometry.$padding-s;
 }
