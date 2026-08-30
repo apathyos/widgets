@@ -24,7 +24,9 @@ export enum Size {
 
 export enum Transition {
     FAST = 200,
+    FASTER = 300,
     NORMAL = 500,
+    SLOWER = 700,
     SLOW = 1000
 }
 

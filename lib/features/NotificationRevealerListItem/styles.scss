@@ -1,0 +1,7 @@
+@use '../../styles/geometry.scss';
+@use '../../styles/colors.scss';
+
+.notification-revealer-list-item__notification {
+    border: geometry.$border-s solid colors.$border;
+    min-height: 25px;
+}

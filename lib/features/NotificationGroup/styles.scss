@@ -1,0 +1,33 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+@use '../../styles/animation.scss';
+
+.notification-group {
+    &_expanded {
+        .notification-group-content-list {
+            margin-top: geometry.$margin-m;
+
+            background-color: colors.$bg-ternary;
+            padding: geometry.$padding-s;
+
+            &__scroller {
+                margin: 0;
+            }
+        }
+
+        .notification-group__notification {
+            border-color: rgb(from colors.$border r g b / 50%);
+        }
+    }
+}
+
+.notification-group-content-list {
+    margin-top: - geometry.$margin-s;
+    border-radius: geometry.$border-radius-m;
+    transition: animation.$transition-faster margin, animation.$transition-faster border-radius, animation.$transition-faster padding;
+    background-color: colors.$bg-ternary;
+}
+
+.notification-group-content-list__scroller {
+    margin: - geometry.$margin-m 0;
+}

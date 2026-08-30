@@ -1,10 +1,13 @@
-import { Accessor, createComputed } from 'gnim';
+import { Accessor, createComputed, createState, onCleanup } from 'gnim';
 import { PropertyValue } from '../types/utils';
 import { isAccessor } from './typeguards';
 import { Position } from '../types/common';
 import GLib from 'gi://GLib?version=2.0';
+import { isEqual } from 'lodash';
 
 export const getId = () => GLib.uuid_string_random();
+
+export const toMap = <T, K>(values: T[], getKey: (value: T) => K) => new Map(values.map(v => [getKey(v), v]));
 
 export const toAccessor = <T>(value: Accessor<T> | T) => {
     if (isAccessor(value)) {
@@ -27,6 +30,32 @@ export const unpackAccessor = <T>(value: PropertyValue<T>) => {
     }
 
     return value;
+};
+
+export const stableAccessor = <T, R = undefined>(value: PropertyValue<T>, opts?: {
+    deep?: boolean;
+    compose?: (value: T) => R;
+}): R extends undefined ? PropertyValue<T> : PropertyValue<R> => {
+    const { deep = true, compose = (value: T) => unpackAccessor(value) } = opts ?? {};
+
+    const [prevValue, setPrevValue] = createState(unpackAccessor(value));
+    const [result, setResult] = createState(compose(unpackAccessor(value)));
+
+    const sub = toAccessor(value).subscribe(() => {
+        const newValue = unpackAccessor(value);
+
+        const composedPrevValue = compose(unpackAccessor(prevValue));
+        const composedNewValue = compose(newValue);
+
+        if (!deep ? composedPrevValue !== composedNewValue : !isEqual(composedPrevValue, composedNewValue)) {
+            setPrevValue(newValue);
+            setResult(composedNewValue);
+        }
+    });
+
+    onCleanup(() => sub());
+
+    return result as R extends undefined ? PropertyValue<T> : PropertyValue<R>;
 };
 
 export const insertToArray = <T, U>(

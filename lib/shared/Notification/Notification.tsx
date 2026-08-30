@@ -5,10 +5,13 @@ import { toAccessor, unpackAccessor, updateAccessor } from '../../utils/misc';
 import { SymbolButton } from '../buttons';
 import { Gtk } from 'ags/gtk4';
 import Pango from 'gi://Pango?version=1.0';
-import { createComputed, createState, With } from 'gnim';
+import { createComputed, createState, onCleanup, With } from 'gnim';
 import { getRelativeDate } from '../../utils/time';
 import { Surface } from '../Surface';
 import { Spacing } from '../../types/common';
+import { NotificationBody } from './NotificationBody';
+import { Stacked } from '../Stacked';
+import { NotificationStackPage } from './types';
 
 export interface INotification {
     ref?: (self: Gtk.Box) => void;
@@ -24,6 +27,9 @@ export interface INotification {
     maxTitleWidthChars?: PropertyValue<number>;
     maxSummaryWidthChars?: PropertyValue<number>;
     maxBodyWidthChars?: PropertyValue<number>;
+    bodyTooltipText?: PropertyValue<string>;
+    expandingTransitionType?: PropertyValue<Gtk.StackTransitionType>;
+    expandingTransitionDuration?: PropertyValue<number>;
     classes?: Classes<'root' | 'title' | 'summary' | 'body' | 'expand' | 'close'>;
     onClose?: () => void;
 }
@@ -41,6 +47,9 @@ export function Notification(props: INotification) {
         maxTitleWidthChars = 25,
         maxSummaryWidthChars = 15,
         maxBodyWidthChars = 60,
+        bodyTooltipText,
+        expandingTransitionType,
+        expandingTransitionDuration,
         classes,
         onClose
     } = props;
@@ -48,48 +57,25 @@ export function Notification(props: INotification) {
     const [time, setTime] = createState('');
     const [isExpanded, setIsExpanded] = createState(unpackAccessor(props.isExpanded) ?? false);
 
+    const visiblePage = createComputed(get => get(isExpanded) ? NotificationStackPage.EXPANDED : NotificationStackPage.COLLAPSED);
     const hasTitle = createComputed(get => !!(isJSXElement(title) || get(toAccessor(title))));
     const hasSummary = createComputed(get => !!(isJSXElement(summary) || get(toAccessor(summary))));
     const hasBody = createComputed(get => !!(isJSXElement(body) || get(toAccessor(body))));
     const showDelimiter = createComputed(get => get(hasTitle) && get(hasSummary));
-
-    const contentLines = createComputed(get => {
-        if (isJSXElement(body)) {
-            return [];
-        }
-
-        const expanded = get(isExpanded);
-        const maxLines = get(toAccessor(maxContentLines));
-        const minLines = get(toAccessor(minContentLines));
-        let isReduced = false;
-
-        return get(toAccessor(body))?.trim().split('\n').reduce((acc, line, idx) => {
-            if (isReduced) {
-                return acc;
-            }
-
-            const isLast = expanded ? idx === maxLines - 1 : idx === minLines - 1;
-
-            if (!isLast || line.trim()) {
-                acc.push(line);
-            }
-
-            if (isLast) {
-                isReduced = true;
-            }
-
-            return acc;
-        }, [] as string[]) ?? [];
-    });
+    const bodyLabel = createComputed(get => isJSXElement(body) ? '' : (get(toAccessor(body)) ?? '').replace(/\r\n|\r|\n/g, ' '));
 
     if (props.time !== undefined) {
         setTime(getRelativeDate((unpackAccessor(props.time) ?? 0) * 1000));
     }
 
-    toAccessor(props.isExpanded).subscribe(() => {
+    const isExpandedSub = toAccessor(props.isExpanded).subscribe(() => {
         const expanded = unpackAccessor(props.isExpanded);
 
         typeof expanded === 'boolean' && setIsExpanded(expanded);
+    });
+
+    onCleanup(() => {
+        isExpandedSub();
     });
 
     return (
@@ -184,25 +170,35 @@ export function Notification(props: INotification) {
                             {isJSXElement(body)
                                 ? body
                                 : (
-                                    <label
-                                        class="notification__body-label"
-                                        label={createComputed(get => get(contentLines).join('\n'))}
-                                        wrap
-                                        wrapMode={Pango.WrapMode.WORD_CHAR}
-                                        halign={Gtk.Align.START}
-                                        valign={Gtk.Align.START}
-                                        xalign={0}
-                                        useMarkup
-                                        hexpand
-                                        ellipsize={Pango.EllipsizeMode.END}
-                                        lines={createComputed(get => Math.min(
-                                            get(isExpanded)
-                                                ? get(toAccessor(maxContentLines))
-                                                : get(toAccessor(minContentLines)),
-                                                get(contentLines).length + 1
-                                        ))}
-                                        maxWidthChars={maxBodyWidthChars}
-                                    />
+                                    <Stacked
+                                        visiblePage={visiblePage}
+                                        isStackVisible={false}
+                                        transitionType={expandingTransitionType}
+                                        transitionDuration={expandingTransitionDuration}
+                                        stackChildren={(
+                                            <>
+                                                <NotificationBody
+                                                    name={NotificationStackPage.COLLAPSED}
+                                                    label={bodyLabel}
+                                                    maxWidthChars={maxBodyWidthChars}
+                                                    lines={minContentLines}
+                                                />
+                                                <NotificationBody
+                                                    name={NotificationStackPage.EXPANDED}
+                                                    label={bodyLabel}
+                                                    maxWidthChars={maxBodyWidthChars}
+                                                    lines={maxContentLines}
+                                                />
+                                            </>
+                                        )}
+                                    >
+                                        <NotificationBody
+                                            label={bodyLabel}
+                                            tooltipText={bodyTooltipText}
+                                            maxWidthChars={maxBodyWidthChars}
+                                            lines={maxContentLines}
+                                        />
+                                    </Stacked>
                                 )
                             }
                         </box>

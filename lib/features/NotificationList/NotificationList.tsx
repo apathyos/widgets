@@ -1,12 +1,12 @@
 import { createComputed, createState, For } from 'gnim';
-import { Notification } from '../../models/Notification';
-import { NotificationGroup } from '../../shared';
+import { Notification } from '@/models/Notification';
+import { NotificationGroup } from '../';
 import Notifd from 'gi://AstalNotifd?version=0.1';
 import { Gtk } from 'ags/gtk4';
-import { unpackAccessor, updateAccessor } from '../../utils/misc';
+import { stableAccessor, toAccessor, unpackAccessor, updateAccessor } from '@/utils/misc';
 import cn from 'classnames';
-import { Classes } from '../../types/utils';
-import { INotification } from '../../types/notification';
+import { Classes } from '@/types/utils';
+import { INotification } from '@/types/notification';
 import { Spacing } from '@/types/common';
 
 const NotificationService = Notifd.get_default();
@@ -36,34 +36,50 @@ export function NotificationList(props: INotificationList) {
         return acc;
     }, [] as INotification[][]));
 
+    const groupsIdx = stableAccessor(notificationsGroups, { compose: groups => groups.map((_, idx) => idx) });
+
     NotificationService.connect('notify', () => {
         setNotifications(notification.getNotifications());
     });
 
     return (
-        <scrolledwindow hexpand vexpand>
-            <box
-                class={updateAccessor(
-                    classes?.root,
-                    (root, get) => cn(root, 'notification-list', !get(notifications).length && 'notification-list_empty')
-                )}
-                orientation={Gtk.Orientation.VERTICAL}
-                spacing={Spacing.L}
+        <Gtk.ScrolledWindow hexpand vexpand propagateNaturalHeight={false}>
+            <Gtk.Viewport
+                hscrollPolicy={Gtk.ScrollablePolicy.MINIMUM}
+                vscrollPolicy={Gtk.ScrollablePolicy.NATURAL}
             >
-                <For each={notificationsGroups}>
-                    {(group) => (
-                        <NotificationGroup
-                            title={group[0]?.appName}
-                            notifications={group}
-                            isExpanded={unpackAccessor(expandedGroups)[group[0]?.appName]}
-                            onExpand={isExpanded => setExpandedGroups({
-                                ...unpackAccessor(expandedGroups),
-                                [group[0]?.appName]: isExpanded
-                            })}
-                        />
+                <box
+                    class={updateAccessor(
+                        classes?.root,
+                        (root, get) => cn(root, 'notification-list', !get(notifications).length && 'notification-list_empty')
                     )}
-                </For>
-            </box>
-        </scrolledwindow>
+                    orientation={Gtk.Orientation.VERTICAL}
+                    spacing={Spacing.L}
+                >
+                    <For each={toAccessor(groupsIdx)}>
+                        {(idx: number) => {
+                            const group = notificationsGroups(v => v[idx]);
+                            const appName = group(v => v[0]?.appName);
+
+                            return (
+                                <NotificationGroup
+                                    title={appName}
+                                    notifications={group}
+                                    isExpanded={createComputed(get => get(expandedGroups)[get(appName)] ?? false)}
+                                    onExpand={isExpanded => setExpandedGroups({
+                                        ...unpackAccessor(expandedGroups),
+                                        [unpackAccessor(appName)]: isExpanded
+                                    })}
+                                    onClose={() => setExpandedGroups({
+                                        ...unpackAccessor(expandedGroups),
+                                        [unpackAccessor(appName)]: false
+                                    })}
+                                />
+                            );
+                        }}
+                    </For>
+                </box>
+            </Gtk.Viewport>
+        </Gtk.ScrolledWindow>
     );
 }
