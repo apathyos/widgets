@@ -1,5 +1,3 @@
-<div align="center">
-
 # apathyos widgets
 
 **Desktop shell UI implementation for the apathyos desktop environment.**
@@ -13,11 +11,13 @@ TypeScript, and an adapted Feature-Sliced Design architecture.
 ![AGS](https://img.shields.io/badge/AGS-GTK%20shell-7C3AED)
 ![Feature-Sliced Design](https://img.shields.io/badge/architecture-Feature--Sliced%20Design-F2F2F2)
 ![Nix](https://img.shields.io/badge/Nix-flake-5277C3?logo=nixos\&logoColor=white)
-![License](https://img.shields.io/badge/license-ISC-lightgrey)
+![License](https://img.shields.io/badge/license-GPL%203.0-lightgrey)
 
 </div>
 
 ---
+
+
 
 ## Project scope
 
@@ -124,12 +124,6 @@ Generate AGS types:
 
 ```bash id="skwf9z"
 npm run types
-```
-
-Initialize vendored dependencies and install Node packages:
-
-```bash id="is2dci"
-npm run bootstrap
 ```
 
 ---
