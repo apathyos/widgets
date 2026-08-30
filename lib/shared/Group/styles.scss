@@ -1,0 +1,46 @@
+@use '../../styles/colors.scss';
+@use '../../styles/geometry.scss';
+@use '../../styles/animation.scss';
+
+.group {
+    &_expanded {
+        .group-button__expand > label {
+            transform: rotate(0deg);
+        }
+
+        .group__header {
+            border-radius: geometry.$border-radius-m;
+            padding-bottom: geometry.$padding-m;
+        }
+    }
+}
+
+.group__header {
+    padding: geometry.$padding-m;
+    padding-top: geometry.$padding-m;
+    padding-bottom: geometry.$padding-m + geometry.$padding-s;
+    background-color: colors.$bg-secondary;
+    border-top-left-radius: geometry.$border-radius-m;
+    border-top-right-radius: geometry.$border-radius-m;
+    transition: animation.$transition-fast border-radius, animation.$transition-fast padding;
+}
+
+.group__title {
+    font-weight: bold;
+    font-size: 105%;
+}
+
+.group-button {
+    background-color: transparent;
+    color: colors.$fg;
+
+    &:hover {
+        color: colors.$fg-hover;
+        background-color: transparent;
+    }
+}
+
+.group-button__expand > label {
+    transform: rotate(-90deg);
+    transition: animation.$transition-fast transform;
+}
