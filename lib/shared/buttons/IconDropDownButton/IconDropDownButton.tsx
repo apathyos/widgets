@@ -5,13 +5,13 @@ import { DropDownButton, IDropDownButton } from '../DropDownButton';
 import cn from 'classnames';
 import { Spacing } from '@/types/common';
 
-export interface IIconDropDownButton extends Omit<IDropDownButton, 'children'> {
+export interface IIconDropDownButton<P = object> extends Omit<IDropDownButton<P>, 'children'> {
     icon: PropertyValue<string>;
     label: PropertyValue<string>;
     classes?: Classes<'root' | 'icon' | 'label'>;
 }
 
-export function IconDropDownButton(props: IIconDropDownButton) {
+export function IconDropDownButton<P = object>(props: IIconDropDownButton<P>) {
     const { icon, label, classes } = props;
 
     return (

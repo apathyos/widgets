@@ -11,7 +11,7 @@ export const useSetupControllers = (args: {
 }) => {
     const { onClick, onMouseMove, onMouseEnter, onMouseLeave, onKeyDown } = args;
 
-    const clickController = new Gtk.GestureClick();
+    const clickController = new Gtk.GestureClick({ button: 0 });
     const clickSub = clickController.connect('pressed', (event) => onClick?.({ event }));
 
     const moveController = new Gtk.EventControllerMotion();

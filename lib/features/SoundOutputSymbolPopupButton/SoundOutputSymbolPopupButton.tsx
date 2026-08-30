@@ -5,6 +5,8 @@ import { Classes } from '../../types/utils';
 import { createState } from 'gnim';
 import { Gtk } from 'ags/gtk4';
 import { Placement } from '../../types/common';
+import { stableAccessor, unpackAccessor } from '@/utils/misc';
+import { isNonNullableAccessor } from '@/utils/typeguards';
 
 const WirePlumberService = WP.get_default();
 
@@ -24,6 +26,8 @@ export function SoundOutputSymbolPopupButton(props: ISoundOutputSymbolPopupButto
     const [outputs, setOutputs] = createState(soundOutput.getOutputs());
     const [icon, setIcon] = createState(soundOutput.getIcon());
 
+    const values = stableAccessor(outputs, { compose: outputs => outputs?.map(o => String(o.id)) ?? [] });
+
     soundOutput.getDefaultMic().connect('notify', () => {
         setOutputs(soundOutput.getOutputs());
         setIcon(soundOutput.getIcon());
@@ -37,15 +41,24 @@ export function SoundOutputSymbolPopupButton(props: ISoundOutputSymbolPopupButto
     return (
         <SymbolPopupButton
             {...props}
+            values={values}
+            getItem={value => {
+                const output = outputs(v => v?.find(o => String(o.id) === value));
+
+                if (!isNonNullableAccessor(output)) {
+                    return null;
+                }
+
+                return {
+                    name: output(v => v.description ?? ''),
+                    value: String(unpackAccessor(output).id),
+                    isActive: output(v => v.get_is_default())
+                };
+            }}
             onSelect={({ value }) => {
                 const output = soundOutput.getOutputById({ id: +value });
                 output?.set_is_default(true);
             }}
-            items={outputs(v => v?.map(output => ({
-                name: output.description ?? '',
-                value: String(output.id),
-                isActive: output.get_is_default()
-            })) ?? [])}
             popupPlacement={Placement.BOTTOM}
         >
             <label label={icon(v => v.icon)} hexpand halign={Gtk.Align.CENTER} />

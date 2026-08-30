@@ -27,7 +27,7 @@
     $animation-name: dots-flash-#{$size};
     border-radius: 50%;
     background-color: colors.$bg-alt;
-    animation: #{$animation-name} animation.$transition-regular ease-out infinite alternate;
+    animation: #{$animation-name} animation.$transition-normal ease-out infinite alternate;
 
     $dot-size: null;
     $spacing: null;

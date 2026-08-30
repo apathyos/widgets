@@ -30,6 +30,7 @@ export function Button(props: IButton) {
                     root: updateAccessor(classes?.root, (root, get) => cn(
                         root,
                         'button',
+                        get(props.isInactive) && 'button_inactive',
                         get(props.isDisabled) && 'button_disabled'
                     )),
                 }}

@@ -1,7 +1,7 @@
 import { PopupButton, IPopupButton } from '../../shared';
-import { Classes, UnpackAccessor } from '../../types/utils';
+import { Classes } from '../../types/utils';
 import cn from 'classnames';
-import { updateAccessor } from '../../utils/misc';
+import { stableAccessor, updateAccessor } from '../../utils/misc';
 import { Gtk } from 'ags/gtk4';
 import { System } from '../../models/System';
 import { LongClickProgressOverlay } from '../../shared/LongClickProgressOverlay';
@@ -29,26 +29,33 @@ export function SystemPowerButton(props: ISystemPowerButton) {
         }
     ];
 
-    const items: (UnpackAccessor<IPopupButton['items']>[0])[] = actions.map(({ name, value, icon, onAct }) => ({
-        name,
-        value,
-        icon,
-        wrapper: ({ children }) => (
-            <LongClickProgressOverlay
-                direction={Direction.FORWARD}
-                onDone={onAct}
-            >
-                {children}
-            </LongClickProgressOverlay>
-        )
-    }));
+    const values = stableAccessor(actions, { compose: actions => actions.map(a => a.value) });
 
     return (
         <PopupButton
             {...props}
-            items={items}
+            values={values}
             classes={{
                 root: updateAccessor(props.classes?.root, root => cn(root, 'system-power-button'))
+            }}
+            getItem={value => {
+                const action = actions.find(a => a.value === value);
+
+                if (!action) {
+                    return null;
+                }
+
+                return {
+                    ...action,
+                    wrapper: ({ children }) => (
+                        <LongClickProgressOverlay
+                            direction={Direction.FORWARD}
+                            onDone={action.onAct}
+                        >
+                            {children}
+                        </LongClickProgressOverlay>
+                    )
+                };
             }}
         >
             <label label="󰟩" hexpand halign={Gtk.Align.CENTER} />

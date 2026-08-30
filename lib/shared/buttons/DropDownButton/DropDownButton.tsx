@@ -1,5 +1,5 @@
 import { createComputed, createState } from 'gnim';
-import { Floated, IList, List, SymbolButton } from '../..';
+import { Floated, ISelectList, ISelectListItem, SelectList, SymbolButton } from '../..';
 import { Button, IButton } from '../..';
 import { Gtk } from 'ags/gtk4';
 import cn from 'classnames';
@@ -9,8 +9,8 @@ import { IFloated } from '../../Floated/Floated';
 import { Align, Offset, Placement, Transition } from '../../../types/common';
 import { TransitionOptions } from '../../../types/widget';
 
-export interface IDropDownButton extends Omit<IButton, 'classes'> {
-    items: IList['items'];
+export interface IDropDownButton<P = object> extends Omit<IButton, 'classes'> {
+    values: ISelectList<P>['values'];
     listIcon?: {
         component?: JSX.Element;
     };
@@ -21,18 +21,20 @@ export interface IDropDownButton extends Omit<IButton, 'classes'> {
     classes?: Classes<'root' | 'iconButton'> & {
         buttonClasses?: IButton['classes'];
     };
+    getItem: ISelectList<P>['getItem'];
     onToggle?: (isOpened: boolean) => void;
-    onSelect?: IList['onSelect'];
+    onSelect?: ISelectListItem<P>['onSelect'];
 }
 
-export function DropDownButton(props: IDropDownButton) {
+export function DropDownButton<P = object>(props: IDropDownButton<P>) {
     const {
-        items,
+        values = [],
         listIcon,
         listItemMaxWidthChar,
         transitionDuration = Transition.NORMAL,
         closeOnSelect,
         classes,
+        getItem,
         onToggle,
         onSelect,
     } = props;
@@ -68,8 +70,9 @@ export function DropDownButton(props: IDropDownButton) {
                 isRootMounted={props.isRootMounted}
                 transitionOptions={transitionOptions}
                 floatContent={({ toggleOpen }) => (
-                    <List
-                        items={items}
+                    <SelectList
+                        values={values}
+                        getItem={getItem}
                         onSelect={(...args) => {
                             onSelect?.(...args);
                             unpackAccessor(closeOnSelect) && toggleOpen();

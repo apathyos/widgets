@@ -34,3 +34,5 @@ export * from './CpuProfileSwitcherDropdownButton';
 export * from './WindowFactory';
 export * from './NotificationWindow';
 export * from './InputModal';
+export * from './NotificationRevealerListItem';
+export * from './NotificationGroup';

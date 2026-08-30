@@ -2,7 +2,8 @@ import { Gtk } from 'ags/gtk4';
 import { Children, Classes, PropertyValue } from '../../../types/utils';
 import { MouseButton } from '../../../types/widget';
 import { toAccessor, unpackAccessor } from '@/utils/misc';
-import { createComputed, onCleanup } from 'gnim';
+import { createComputed } from 'gnim';
+import { useSetupControllers } from '@/hooks/use-setup-controllers';
 
 export interface IButtonBase {
     ref?: (self: Gtk.Box) => void;
@@ -42,35 +43,27 @@ export function ButtonBase(props: IButtonBase) {
         return get(toAccessor(isInactive)) || get(toAccessor(isDisabled));
     });
 
-    const clickController = new Gtk.GestureClick({ button: 0 });
-    const clickSub = clickController.connect('pressed', (event) => {
-        if (unpackAccessor(isInteractionDisabled)) {
-            return;
-        }
+    const { onSetup } = useSetupControllers({
+        onClick: ({ event }) => {
+            if (unpackAccessor(isInteractionDisabled)) {
+                return;
+            }
 
-        if (event.get_current_button() === MouseButton.LEFT) {
-            onClick?.({ event });
-        } else if (event.get_current_button() === MouseButton.RIGHT) {
-            onRightClick?.({ event });
-        }
-    });
-
-    const hoverController = new Gtk.EventControllerMotion();
-    const hoverEnterSub = hoverController.connect('enter', (event) => onHover?.({ event, isHovered: true }));
-    const hoverLeaveSub = hoverController.connect('leave', (event) => onHover?.({ event, isHovered: false }));
-
-    onCleanup(() => {
-        clickController.disconnect(clickSub);
-        hoverController.disconnect(hoverEnterSub);
-        hoverController.disconnect(hoverLeaveSub);
+            if (event.get_current_button() === MouseButton.LEFT) {
+                onClick?.({ event });
+            } else if (event.get_current_button() === MouseButton.RIGHT) {
+                onRightClick?.({ event });
+            }
+        },
+        onMouseEnter: ({ event }) => onHover?.({ event, isHovered: true }),
+        onMouseLeave: ({ event }) => onHover?.({ event, isHovered: false })
     });
 
     return (
         <box
             $={(self) => {
                 ref?.(self);
-                self.add_controller(clickController);
-                self.add_controller(hoverController);
+                onSetup(self);
             }}
             halign={halign}
             valign={valign}

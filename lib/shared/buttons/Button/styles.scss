@@ -9,15 +9,15 @@
     border-radius: geometry.$border-radius-m;
     transition: animation.$transition-fast background-color;
 
-    &:hover {
+    &:not(&_inactive):not(&_disabled):hover {
         background-color: colors.$bg-alt-hover;
     }
-}
 
-.button_disabled {
-    background-color: colors.$bg-alt-disabled;
-
-    &:hover {
+    &_disabled {
         background-color: colors.$bg-alt-disabled;
+
+        &:hover {
+            background-color: colors.$bg-alt-disabled;
+        }
     }
 }

@@ -1,7 +1,6 @@
 import { createComputed, createState } from 'gnim';
 import { Transition } from '../../../types/common';
 import { PropertyValue } from '../../../types/utils';
-import { IList, List } from '../../List';
 import { Gtk } from 'ags/gtk4';
 import { TransitionOptions } from '../../../types/widget';
 import { toAccessor } from '../../../utils/misc';
@@ -9,31 +8,29 @@ import { ButtonBase, IButtonBase } from '../ButtonBase';
 import { Floated } from '../../Floated';
 import Pango from 'gi://Pango';
 import { IFloated } from '../../Floated/Floated';
+import { ISelectList, SelectList } from '@/shared';
+import { isJSXElement } from '@/utils/typeguards';
 
-export interface IPopupButtonBase<P = object, V = string> extends IButtonBase {
-    items: IList<P, V>['items'];
+export interface IPopupButtonBase<P = object> extends IButtonBase {
+    values: ISelectList<P>['values'];
     isRootMounted: PropertyValue<boolean>;
-    listItemHalign?: IList<P, V>['itemHalign'];
-    listItemEllipsize?: IList<P, V>['ellipsize'];
-    listItemMaxWidthChar?: IList<P, V>['maxWidthChar'];
     transitionDuration?: PropertyValue<Transition>;
     popupAlign?: IFloated['align'];
     popupPlacement?: IFloated['placement'];
+    getItem: ISelectList<P>['getItem'];
     onToggle?: (isOpened: boolean) => void;
-    onSelect?: IList<P, V>['onSelect'];
+    onSelect?: ISelectList<P>['onSelect'];
 }
 
-export function PopupButtonBase<P = object, V = string>(props: IPopupButtonBase<P, V>) {
+export function PopupButtonBase<P>(props: IPopupButtonBase<P>) {
     const {
-        items,
+        values,
         onToggle,
         onSelect,
-        listItemHalign,
-        listItemEllipsize = Pango.EllipsizeMode.END,
-        listItemMaxWidthChar = 10,
         transitionDuration = Transition.FAST,
         popupAlign,
         popupPlacement,
+        getItem
     } = props;
 
     const [buttonRef, setButtonRef] = createState<Gtk.Box | null>(null);
@@ -55,13 +52,27 @@ export function PopupButtonBase<P = object, V = string>(props: IPopupButtonBase<
                 align={popupAlign}
                 placement={popupPlacement}
                 floatContent={() => (
-                    <List
+                    <SelectList
                         hexpand
-                        items={items}
+                        values={values}
+                        getItem={value => {
+                            const item = getItem(value);
+
+                            if (!item) {
+                                return null;
+                            }
+
+                            if (isJSXElement(item)) {
+                                return item;
+                            }
+
+                            return {
+                                ...item,
+                                ellipsize: item.ellipsize ?? Pango.EllipsizeMode.END,
+                                maxWidthChar: item.maxWidthChar ?? 10
+                            };
+                        }}
                         onSelect={onSelect}
-                        itemHalign={listItemHalign}
-                        ellipsize={listItemEllipsize}
-                        maxWidthChar={listItemMaxWidthChar}
                     />
                 )}
             >
