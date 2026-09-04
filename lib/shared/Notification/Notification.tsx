@@ -9,9 +9,7 @@ import { createComputed, createState, onCleanup, With } from 'gnim';
 import { getRelativeDate } from '../../utils/time';
 import { Surface } from '../Surface';
 import { Spacing } from '../../types/common';
-import { NotificationBody } from './NotificationBody';
-import { Stacked } from '../Stacked';
-import { NotificationStackPage } from './types';
+import { ExpandableLabel } from '../ExpandableLabel';
 
 export interface INotification {
     ref?: (self: Gtk.Box) => void;
@@ -57,12 +55,10 @@ export function Notification(props: INotification) {
     const [time, setTime] = createState('');
     const [isExpanded, setIsExpanded] = createState(unpackAccessor(props.isExpanded) ?? false);
 
-    const visiblePage = createComputed(get => get(isExpanded) ? NotificationStackPage.EXPANDED : NotificationStackPage.COLLAPSED);
     const hasTitle = createComputed(get => !!(isJSXElement(title) || get(toAccessor(title))));
     const hasSummary = createComputed(get => !!(isJSXElement(summary) || get(toAccessor(summary))));
     const hasBody = createComputed(get => !!(isJSXElement(body) || get(toAccessor(body))));
     const showDelimiter = createComputed(get => get(hasTitle) && get(hasSummary));
-    const bodyLabel = createComputed(get => isJSXElement(body) ? '' : (get(toAccessor(body)) ?? '').replace(/\r\n|\r|\n/g, ' '));
 
     if (props.time !== undefined) {
         setTime(getRelativeDate((unpackAccessor(props.time) ?? 0) * 1000));
@@ -170,35 +166,18 @@ export function Notification(props: INotification) {
                             {isJSXElement(body)
                                 ? body
                                 : (
-                                    <Stacked
-                                        visiblePage={visiblePage}
-                                        isStackVisible={false}
+                                    <ExpandableLabel
+                                        label={toAccessor(body)(v => v?.trimEnd() ?? '')}
+                                        tooltipText={bodyTooltipText}
+                                        isExpanded={isExpanded}
+                                        minContentLines={minContentLines}
+                                        maxContentLines={maxContentLines}
+                                        maxWidthChars={maxBodyWidthChars}
                                         transitionType={expandingTransitionType}
                                         transitionDuration={expandingTransitionDuration}
-                                        stackChildren={(
-                                            <>
-                                                <NotificationBody
-                                                    name={NotificationStackPage.COLLAPSED}
-                                                    label={bodyLabel}
-                                                    maxWidthChars={maxBodyWidthChars}
-                                                    lines={minContentLines}
-                                                />
-                                                <NotificationBody
-                                                    name={NotificationStackPage.EXPANDED}
-                                                    label={bodyLabel}
-                                                    maxWidthChars={maxBodyWidthChars}
-                                                    lines={maxContentLines}
-                                                />
-                                            </>
-                                        )}
-                                    >
-                                        <NotificationBody
-                                            label={bodyLabel}
-                                            tooltipText={bodyTooltipText}
-                                            maxWidthChars={maxBodyWidthChars}
-                                            lines={maxContentLines}
-                                        />
-                                    </Stacked>
+                                        useMarkup
+                                        classes={{ label: 'notification__body-label' }}
+                                    />
                                 )
                             }
                         </box>

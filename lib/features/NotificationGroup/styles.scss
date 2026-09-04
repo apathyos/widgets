@@ -31,3 +31,7 @@
 .notification-group-content-list__scroller {
     margin: - geometry.$margin-m 0;
 }
+
+.notification-group__notification {
+    transition: animation.$transition-faster border-color;
+}

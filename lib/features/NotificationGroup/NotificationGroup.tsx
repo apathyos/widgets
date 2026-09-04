@@ -73,7 +73,8 @@ export function NotificationGroup(props: INotificationGroup) {
                 values={toAccessor(notifications)(v => v.map(n => String(n.id)))}
                 pinned={pinnedNotifications}
                 scroller={{
-                    maxContentHeight: 500
+                    maxContentHeight: 500,
+                    hscrollbarPolicy: Gtk.PolicyType.NEVER
                 }}
                 transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
                 transitionDuration={expandingTransitionDuration}

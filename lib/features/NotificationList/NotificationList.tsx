@@ -1,4 +1,4 @@
-import { createComputed, createState, For } from 'gnim';
+import { createComputed, createState, For, onCleanup } from 'gnim';
 import { Notification } from '@/models/Notification';
 import { NotificationGroup } from '../';
 import Notifd from 'gi://AstalNotifd?version=0.1';
@@ -38,12 +38,21 @@ export function NotificationList(props: INotificationList) {
 
     const groupsIdx = stableAccessor(notificationsGroups, { compose: groups => groups.map((_, idx) => idx) });
 
-    NotificationService.connect('notify', () => {
+    const notifySub = NotificationService.connect('notify', () => {
         setNotifications(notification.getNotifications());
     });
 
+    onCleanup(() => {
+        NotificationService.disconnect(notifySub);
+    });
+
     return (
-        <Gtk.ScrolledWindow hexpand vexpand propagateNaturalHeight={false}>
+        <Gtk.ScrolledWindow
+            hexpand
+            vexpand
+            propagateNaturalHeight={false}
+            hscrollbarPolicy={Gtk.PolicyType.NEVER}
+        >
             <Gtk.Viewport
                 hscrollPolicy={Gtk.ScrollablePolicy.MINIMUM}
                 vscrollPolicy={Gtk.ScrollablePolicy.NATURAL}

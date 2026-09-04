@@ -1,6 +1,7 @@
 import { ISymbolRevealButton, SymbolRevealButton } from '../../shared';
 import { Classes } from '../../types/utils';
-import { getStringList, updateAccessor } from '../../utils/misc';
+import { updateAccessor } from '../../utils/misc';
+import { getStringList } from '../../utils/strings';
 import Network from 'gi://AstalNetwork?version=0.1';
 import cn from 'classnames';
 import { createComputed, createState } from 'gnim';

@@ -24,9 +24,9 @@ export const updateAccessor = <T, R>(
     return createComputed((get) => cb(get(toAccessor(value)), <V>(signal: PropertyValue<V>) => get(toAccessor(signal))));
 };
 
-export const unpackAccessor = <T>(value: PropertyValue<T>) => {
+export const unpackAccessor = <T>(value: PropertyValue<T>, reactive = false) => {
     if (value instanceof Accessor) {
-        return toAccessor(value).peek();
+        return reactive ? toAccessor(value)() : toAccessor(value).peek();
     }
 
     return value;
@@ -101,24 +101,8 @@ export const insertToArray = <T, U>(
     return newArr;
 };
 
-export const getStringList = <T>(arr: T[], cb: (item: T) => string) => {
-    return arr.reduce((acc, item, idx) => {
-        return acc + (idx > 0 ? ', ' : '') + cb(item);
-    }, '');
-};
-
 export const getEnumKeyFromValue = (type: object, value: unknown) => {
     return Object.entries(type).find(([_, v]) => v === value)?.[0];
-};
-
-export const getStringFromBytes = (bytes: GLib.Bytes) => {
-    const data = bytes.get_data();
-
-    if (!data || !data.length) {
-        return '';
-    }
-
-    return new TextDecoder('utf-8').decode(data);
 };
 
 export const getUnpackedNumber = (value: unknown): number => {

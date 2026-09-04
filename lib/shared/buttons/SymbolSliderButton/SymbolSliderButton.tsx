@@ -56,18 +56,20 @@ export function SymbolSliderButton(props: ISymbolSliderButton) {
                         )
                     }}
                 >
-                    <Slider
-                        classes={{
-                            root: updateAccessor(
-                                classes?.slider,
-                                (slider) => cn(slider, 'symbol-slider-button__slider'),
-                            )
-                        }}
-                        min={min}
-                        max={max}
-                        value={value}
-                        onChange={onChange}
-                    />
+                    {() => (
+                        <Slider
+                            classes={{
+                                root: updateAccessor(
+                                    classes?.slider,
+                                    (slider) => cn(slider, 'symbol-slider-button__slider'),
+                                )
+                            }}
+                            min={min}
+                            max={max}
+                            value={value}
+                            onChange={onChange}
+                        />
+                    )}
                 </Revealer>
             </>
         </SymbolButton>

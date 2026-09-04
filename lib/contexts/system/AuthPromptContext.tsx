@@ -13,7 +13,7 @@ export function useAuthPrompt() {
 }
 
 export interface IAuthPromptContextProvider {
-    children: Children;
+    children: () => Children;
     service: AuthService;
 }
 

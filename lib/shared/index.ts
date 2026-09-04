@@ -32,3 +32,4 @@ export * from './Input';
 export * from './LoaderOverlay';
 export * from './Group';
 export * from './Stacked';
+export * from './ExpandableLabel';

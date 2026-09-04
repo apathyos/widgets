@@ -59,15 +59,17 @@ export function withPinned<P, T extends IList<P>>(Component: (props: FCProps<Gtk
                     transitionDuration={transitionDuration}
                     vexpand={false}
                 >
-                    <box
-                        css={contentContainerCss}
-                        orientation={orientation}
-                        spacing={spacing}
-                    >
-                        <For each={restItemsValues}>
-                            {(value: string) => <ListItemBase item={getItem(value)} />}
-                        </For>
-                    </box>
+                    {() => (
+                        <box
+                            css={contentContainerCss}
+                            orientation={orientation}
+                            spacing={spacing}
+                        >
+                            <For each={restItemsValues}>
+                                {(value: string) => <ListItemBase item={getItem(value)} />}
+                            </For>
+                        </box>
+                    )}
                 </Revealer>
             </Component>
         );

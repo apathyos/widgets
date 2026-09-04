@@ -1,7 +1,8 @@
 import { createComputed, createState } from 'gnim';
 import { ISymbolRevealButton, SymbolRevealButton } from '../../shared';
 import { Classes } from '../../types/utils';
-import { getStringList, updateAccessor } from '../../utils/misc';
+import { updateAccessor } from '../../utils/misc';
+import { getStringList } from '../../utils/strings';
 import BluetoothModule from 'gi://AstalBluetooth?version=0.1';
 import cn from 'classnames';
 import { Bluetooth } from '../../models/Bluetooth';

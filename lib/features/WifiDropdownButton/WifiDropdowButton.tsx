@@ -3,14 +3,14 @@ import { IconDropDownButton, IIconDropDownButton } from '../../shared';
 import Network from 'gi://AstalNetwork?version=0.1';
 import { Classes } from '../../types/utils';
 import {
-    getStringFromBytes,
-    getStringList,
     stableAccessor,
     toAccessor,
     toMap,
     unpackAccessor,
     updateAccessor
 } from '../../utils/misc';
+import { getStringFromBytes } from '../../utils/strings'
+import { getStringList } from '../../utils/strings';
 import cn from 'classnames';
 import { WifiNetwork } from '../../models/Network';
 import { timeout, Timer } from 'ags/time';

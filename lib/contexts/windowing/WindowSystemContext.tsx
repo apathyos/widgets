@@ -15,7 +15,7 @@ export function useWindowSystem() {
 }
 
 export interface IWindowSystemContextProvider {
-    children: Children;
+    children: () => Children;
     service: WindowService;
 }
 

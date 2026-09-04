@@ -38,37 +38,42 @@ export function StatusPanel(props: IStatusPanel) {
             isRevealed={isOpened}
             transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
             margin={{
-                top: toAccessor(windowHeight)((v) => (v - v * STATUS_PANEL_HEIGHT_MULTIPLIER) / 2 - TOP_BAR_HEIGHT),
+                top: toAccessor(windowHeight)((v) => Math.max(
+                    0,
+                    Math.round((v - v * STATUS_PANEL_HEIGHT_MULTIPLIER) / 2 - TOP_BAR_HEIGHT))
+                ),
             }}
             css={createComputed(
                 (get) => `min-height: ${get(toAccessor(windowHeight)) * STATUS_PANEL_HEIGHT_MULTIPLIER}px;`,
             )}
         >
-            <Surface
-                css={`
-                    min-width: ${STATUS_PANEL_WIDTH}px;
-                    margin-right: ${Spacing.XL}px;
-                `}
-                classes={{
-                    root: updateAccessor(
-                        classes?.root,
-                        (root) => cn(root, 'status-panel', isOpened && 'status-panel_opened')
-                    )
-                }}
-            >
-                <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.L}>
-                    {/* <StatusPanelTogglersSection /> */}
-                    <StatusPanelSlidersSection isRootMounted={isOpened} />
-                    <StatusPanelButtonsSection isRootMounted={isOpened} />
-                    <StatusPanelPlayerSection />
-                    <box vexpand>
-                        <StatusPanelTraySection />
+            {() => (
+                <Surface
+                    css={`
+                        min-width: ${STATUS_PANEL_WIDTH}px;
+                        margin-right: ${Spacing.XL}px;
+                    `}
+                    classes={{
+                        root: updateAccessor(
+                            classes?.root,
+                            (root) => cn(root, 'status-panel', isOpened && 'status-panel_opened')
+                        )
+                    }}
+                >
+                    <box orientation={Gtk.Orientation.VERTICAL} spacing={Spacing.L}>
+                        {/* <StatusPanelTogglersSection /> */}
+                        <StatusPanelSlidersSection isRootMounted={isOpened} />
+                        <StatusPanelButtonsSection isRootMounted={isOpened} />
+                        <StatusPanelPlayerSection />
+                        <box vexpand>
+                            <StatusPanelTraySection />
+                        </box>
+                        <box valign={Gtk.Align.END}>
+                            <StatusPanelControlsSection isRootMounted={isOpened} />
+                        </box>
                     </box>
-                    <box valign={Gtk.Align.END}>
-                        <StatusPanelControlsSection isRootMounted={isOpened} />
-                    </box>
-                </box>
-            </Surface>
+                </Surface>
+            )}
         </Revealer>
     );
 }

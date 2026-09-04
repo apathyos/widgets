@@ -4,9 +4,9 @@ import { TopBarModule, StatusPanelModule, NotificationLayerModule, FloatingLayer
 import { APP_ID } from './lib/constants/os';
 import { WindowService } from './lib/services/WindowService';
 import { WindowRegistry } from './lib/registry/WindowRegistry';
-import { WindowSystemContext } from './lib/contexts/windowing/WindowSystemContext';
+import { WindowSystemContextProvider } from './lib/contexts/windowing/WindowSystemContext';
 import { AuthService } from './lib/services/AuthService';
-import { AuthPromptContext } from './lib/contexts/system';
+import { AuthPromptContextProvider } from './lib/contexts/system';
 import { PolkitAuthAgent } from '@/models/Auth/PolkitAuthAgent';
 
 function main(this: typeof app) {
@@ -19,14 +19,18 @@ function main(this: typeof app) {
         authService.unregister();
     });
 
-    WindowSystemContext.provide({ service: windowService }, () => {
-        AuthPromptContext.provide({ service: authService }, () => {
-            <TopBarModule />;
-            <StatusPanelModule />;
-            <NotificationLayerModule />;
-            <FloatingLayerModule />;
-        });
-    });
+    <WindowSystemContextProvider service={windowService}>
+        {() => {
+            <AuthPromptContextProvider service={authService}>
+                {() => {
+                    <TopBarModule />;
+                    <StatusPanelModule />;
+                    <NotificationLayerModule />;
+                    <FloatingLayerModule />;
+                }}
+            </AuthPromptContextProvider>;
+        }}
+    </WindowSystemContextProvider>;
 }
 
 app.start({

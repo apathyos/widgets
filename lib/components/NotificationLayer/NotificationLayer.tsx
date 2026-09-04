@@ -82,7 +82,7 @@ export function NotificationLayer() {
         });
     };
 
-    const notifServiceSub = NotificationService.connect('notified', (service, id) => {
+    const notifServiceNotifiedSub = NotificationService.connect('notified', (service, id) => {
         const activeNotif = unpackAccessor(activeNotification);
         const newNotification = service.get_notification(id);
 
@@ -164,7 +164,7 @@ export function NotificationLayer() {
     }));
 
     onCleanup(() => {
-        NotificationService.disconnect(notifServiceSub);
+        NotificationService.disconnect(notifServiceNotifiedSub);
         app.disconnect(idleStatusCommandSub);
         app.disconnect(dontDisturbCommandSub);
         app.disconnect(dontDisturbQuerySub);

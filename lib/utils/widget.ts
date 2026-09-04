@@ -3,6 +3,7 @@ import { Anchor, Element } from '../types/widget';
 import { getMonitorForSurface, getWidgetMonitor, getWidgetSurface } from './display';
 import GLib from 'gi://GLib?version=2.0';
 import { Margin } from '../types/common';
+import Pango from 'gi://Pango?version=1.0';
 
 export const getWidgetAbsolutePosition = (widget: Gtk.Widget) => {
     const root = widget.get_root();
@@ -240,4 +241,56 @@ export const getElementDragDelta = (args: {
     }
 
     return { x, y };
+};
+
+export const getLimitedLayoutHeight = (args: {
+    layout: Pango.Layout,
+    maxLines: number,
+}): number => {
+    const { layout, maxLines } = args;
+
+    if (maxLines <= 0) {
+        return 0;
+    }
+
+    const iter = layout.get_iter();
+    let index = 0;
+    let firstTop: number | null = null;
+    let lastVisibleBottom: number | null = null;
+
+    do {
+        const [ink] = iter.get_line_extents();
+
+        if (!ink) {
+            continue;
+        }
+
+        const [y0, y1] = iter.get_line_yrange();
+
+        if (firstTop === null) {
+            firstTop = Math.min(y0, ink.y);
+        }
+
+        const hasVisibleContent = ink.width !== 0 || ink.height !== 0;
+
+        if (hasVisibleContent) {
+            const inkBottom = ink.y + ink.height;
+            lastVisibleBottom = Math.max(y1, inkBottom);
+        }
+
+        index++;
+
+        if (index >= maxLines) {
+            break;
+        }
+    } while (iter.next_line())
+
+    if (firstTop === null || lastVisibleBottom === null) {
+        return 0;
+    }
+
+    const topPx = Math.floor(firstTop / Pango.SCALE);
+    const bottomPx = Math.ceil(lastVisibleBottom / Pango.SCALE);
+
+    return Math.max(0, bottomPx - topPx);
 };

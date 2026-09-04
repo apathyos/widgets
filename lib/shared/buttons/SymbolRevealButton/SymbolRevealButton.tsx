@@ -42,21 +42,23 @@ export function SymbolRevealButton(props: ISymbolRevealButton) {
                     transitionType={transitionType}
                     transitionDuration={transitionDuration}
                 >
-                    <box
-                        class={updateAccessor(
-                            classes?.contentContainer,
-                            (contentContainer) => cn(contentContainer, 'symbol-reveal-button__content-container')
-                        )}
-                        orientation={Gtk.Orientation.VERTICAL}
-                        valign={Gtk.Align.CENTER}
-                    >
-                        <label
-                            class={updateAccessor(classes?.label, (label) => cn(label, 'symbol-reveal-button__label'))}
-                            label={label}
-                            maxWidthChars={15}
-                            ellipsize={Pango.EllipsizeMode.END}
-                        />
-                    </box>
+                    {() => (
+                        <box
+                            class={updateAccessor(
+                                classes?.contentContainer,
+                                (contentContainer) => cn(contentContainer, 'symbol-reveal-button__content-container')
+                            )}
+                            orientation={Gtk.Orientation.VERTICAL}
+                            valign={Gtk.Align.CENTER}
+                        >
+                            <label
+                                class={updateAccessor(classes?.label, (label) => cn(label, 'symbol-reveal-button__label'))}
+                                label={label}
+                                maxWidthChars={15}
+                                ellipsize={Pango.EllipsizeMode.END}
+                            />
+                        </box>
+                    )}
                 </Revealer>
             </box>
         </SymbolButton>

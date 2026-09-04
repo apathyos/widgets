@@ -15,6 +15,7 @@ export interface IListBase {
         vexpand?: PropertyValue<boolean>;
         hexpand?: PropertyValue<boolean>;
         vscrollbarPolicy?: PropertyValue<Gtk.PolicyType>;
+        hscrollbarPolicy?: PropertyValue<Gtk.PolicyType>;
     };
     orientation?: PropertyValue<Gtk.Orientation>;
     spacing?: PropertyValue<number>;
