@@ -24,7 +24,7 @@
 .notification-group-content-list {
     margin-top: - geometry.$margin-s;
     border-radius: geometry.$border-radius-m;
-    transition: animation.$transition-faster margin, animation.$transition-faster border-radius, animation.$transition-faster padding;
+    transition: animation.$transition-faster margin, animation.$transition-faster border-radius, animation.$transition-fast padding;
     background-color: colors.$bg-ternary;
 }
 

@@ -22,7 +22,7 @@
     background-color: colors.$bg-secondary;
     border-top-left-radius: geometry.$border-radius-m;
     border-top-right-radius: geometry.$border-radius-m;
-    transition: animation.$transition-fast border-radius, animation.$transition-fast padding;
+    transition: animation.$transition-faster border-radius, animation.$transition-faster padding;
 }
 
 .group__title {
@@ -42,5 +42,5 @@
 
 .group-button__expand > label {
     transform: rotate(-90deg);
-    transition: animation.$transition-fast transform;
+    transition: animation.$transition-faster transform;
 }
