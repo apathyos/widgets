@@ -3,3 +3,7 @@
 .select-list-item__button {
     padding-right: geometry.$padding-l;
 }
+
+.select-list-item__active-icon {
+    min-width: geometry.$size-s;
+}

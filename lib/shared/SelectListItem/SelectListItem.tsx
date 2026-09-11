@@ -53,9 +53,9 @@ export function SelectListItem<
                     <ListItemBaseContent item={item} classes={classes} />
 
                     <With value={toAccessor(item.isActive)}>
-                        {(isActive: boolean | undefined) => isActive && (
-                            <label label="" class="select-list-item__active-icon" halign={Gtk.Align.END} />
-                        )}
+                        {(isActive: boolean | undefined) => typeof isActive === 'boolean' ? (
+                            <label label={isActive ? '' : ''} class="select-list-item__active-icon" halign={Gtk.Align.END} />
+                        ) : null}
                     </With>
                 </Button>
             )}
