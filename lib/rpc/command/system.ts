@@ -1,7 +1,8 @@
-import { Output, Window, Workspace } from '../../types/system';
+import { Output, SystemInhibitor, Window, Workspace } from '../../types/system';
 import { Request, RequestType } from '../types';
 import {
     IdleStatusCommandRequest,
+    SetActiveSystemInhibitorsCommandRequest,
     SetOutputsCommandRequest,
     SetWindowsCommandRequest,
     SetWorkspacesCommandRequest
@@ -61,6 +62,25 @@ export const getSetWindowsCommandRequest = (windows: Window[]) => {
     const request: SetWindowsCommandRequest = {
         type: RequestType.COMMAND,
         system: { windows }
+    };
+
+    return request;
+};
+
+export const getIsSetActiveSystemInhibitorsCommandRequest = (
+    request: Request
+): request is SetActiveSystemInhibitorsCommandRequest => {
+    return !!(
+        request.type === RequestType.COMMAND &&
+        'system' in request &&
+        'activeSystemInhibitors' in request.system && request.system.activeSystemInhibitors
+    );
+};
+
+export const getSetActiveSystemInhibitorsCommandRequest = (systemInhibitors: SystemInhibitor[]) => {
+    const request: SetActiveSystemInhibitorsCommandRequest = {
+        type: RequestType.COMMAND,
+        system: { activeSystemInhibitors: systemInhibitors }
     };
 
     return request;

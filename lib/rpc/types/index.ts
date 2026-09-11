@@ -6,6 +6,7 @@ import {
 } from './statusPanel';
 import {
     IdleStatusCommandRequest,
+    SetActiveSystemInhibitorsCommandRequest,
     SetOutputsCommandRequest,
     SetWindowsCommandRequest,
     SetWorkspacesCommandRequest
@@ -45,4 +46,5 @@ export type Request =
     | DontDisturbCommandRequest
     | DontDisturbQueryRequest
     | DismissAllNotificationsCommandRequest
-    | KeyboardLayoutCommandRequest;
+    | KeyboardLayoutCommandRequest
+    | SetActiveSystemInhibitorsCommandRequest;

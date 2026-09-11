@@ -43,6 +43,12 @@ export enum CpuProfile {
     PERFORMANCE = 'apathyos-performance'
 }
 
+export enum SystemInhibitorType {
+    IDLE = 'idle',
+    SLEEP = 'sleep',
+    LID = 'handle-lid-switch'
+}
+
 export type NetworkActiveConnection = NM.ActiveConnection;
 export type NetworkRemoteConnection = NM.RemoteConnection;
 export type NetworkAccessPoint = NM.AccessPoint;
@@ -104,4 +110,10 @@ export type BrightessDevice = {
     value: number;
     percentage: string;
     max: number;
+};
+
+export type SystemInhibitor = {
+    type: SystemInhibitorType;
+    name: string;
+    description: string;
 };

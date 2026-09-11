@@ -15,6 +15,7 @@ import {
     ChargeRate,
     NightShiftButton,
     ScreenRecordButton,
+    SystemInhibitIcon,
 } from '../../features';
 import { Section, SectionBar } from '../../shared';
 import { Date } from '../../features/Date/Date';
@@ -52,6 +53,7 @@ export function TopBar(props: ITopBar) {
                     </Section>
                     <Section spacing={Spacing.S}>
                         <ScreenRecordButton />
+                        <SystemInhibitIcon />
                         <SoundOutputButton />
                         <DontDisturbButton />
                         <VolumeButton />

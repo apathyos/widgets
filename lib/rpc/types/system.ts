@@ -1,5 +1,5 @@
 import { CommandRequestBase } from '.';
-import { IdleStatus, Output, Window, Workspace } from '../../types/system';
+import { IdleStatus, Output, SystemInhibitor, Window, Workspace } from '../../types/system';
 
 export type IdleStatusCommandRequest = CommandRequestBase & {
     system: {
@@ -23,4 +23,10 @@ export type SetWindowsCommandRequest = CommandRequestBase & {
     system: {
         windows: Window[];
     };
+};
+
+export type SetActiveSystemInhibitorsCommandRequest = CommandRequestBase & {
+    system: {
+        activeSystemInhibitors: SystemInhibitor[];
+    }
 };

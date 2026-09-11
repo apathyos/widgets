@@ -36,3 +36,5 @@ export * from './NotificationWindow';
 export * from './InputModal';
 export * from './NotificationRevealerListItem';
 export * from './NotificationGroup';
+export * from './SystemInhibitPopupButton';
+export * from './SystemInhibitIcon';

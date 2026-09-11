@@ -283,7 +283,7 @@ export const getLimitedLayoutHeight = (args: {
         if (index >= maxLines) {
             break;
         }
-    } while (iter.next_line())
+    } while (iter.next_line());
 
     if (firstTop === null || lastVisibleBottom === null) {
         return 0;

@@ -1,5 +1,12 @@
 import { Gtk } from 'ags/gtk4';
-import { DpmsPopupButton, SystemLockButton, SystemLogoutButton, SystemPowerButton, SystemSuspendButton } from '../../features';
+import {
+    DpmsPopupButton,
+    SystemInhibitPopupButton,
+    SystemLockButton,
+    SystemLogoutButton,
+    SystemPowerButton,
+    SystemSuspendButton
+} from '../../features';
 import { Section } from '../../shared';
 import { Classes, PropertyValue } from '../../types/utils';
 import { updateAccessor } from '../../utils/misc';
@@ -23,6 +30,12 @@ export function StatusPanelControlsSection(props: IStatusPanelControlsSection) {
             }}
         >
             <DpmsPopupButton
+                isRootMounted={isRootMounted}
+                halign={Gtk.Align.FILL}
+                hexpand
+                classes={{ root: 'status-panel-controls-section__button' }}
+            />
+            <SystemInhibitPopupButton
                 isRootMounted={isRootMounted}
                 halign={Gtk.Align.FILL}
                 hexpand
