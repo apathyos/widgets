@@ -33,3 +33,4 @@ export * from './LoaderOverlay';
 export * from './Group';
 export * from './Stacked';
 export * from './ExpandableLabel';
+export * from './Symbol';
