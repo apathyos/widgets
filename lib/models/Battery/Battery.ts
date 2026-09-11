@@ -20,51 +20,47 @@ export class Battery {
     getIcon(args: { percentage: number; isCharging: boolean }) {
         const { percentage, isCharging } = args;
 
-        if (percentage <= 5) {
+        if (percentage < 10) {
             return { icon: isCharging ? '󰢟' : '󰂃', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.CRIT };
         }
 
-        if (percentage <= 10) {
+        if (percentage < 20) {
             return { icon: isCharging ? '󰢜' : '󰁺', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.CRIT };
         }
 
-        if (percentage < 20) {
-            return { icon: isCharging ? '󰂆' : '󰁻', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.CRIT };
+        if (percentage < 30) {
+            return { icon: isCharging ? '󰂆' : '󰁻', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.WARN };
         }
 
-        if (percentage <= 30) {
-            return { icon: isCharging ? '󰂇' : '󰁼', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.WARN };
+        if (percentage < 40) {
+            return { icon: isCharging ? '󰂇' : '󰁼', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
         }
 
-        if (percentage <= 40) {
+        if (percentage < 50) {
             return { icon: isCharging ? '󰂈' : '󰁽', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
         }
 
-        if (percentage <= 50) {
+        if (percentage < 60) {
             return { icon: isCharging ? '󰢝' : '󰁾', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
         }
 
-        if (percentage <= 60) {
+        if (percentage < 70) {
             return { icon: isCharging ? '󰂉' : '󰁿', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
         }
 
-        if (percentage <= 70) {
+        if (percentage < 80) {
             return { icon: isCharging ? '󰢞' : '󰂀', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
         }
 
-        if (percentage <= 80) {
+        if (percentage < 90) {
             return { icon: isCharging ? '󰂊' : '󰂁', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
         }
 
-        if (percentage <= 90) {
+        if (percentage < 99) {
             return { icon: isCharging ? '󰂋' : '󰂂', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
         }
 
-        if (percentage <= 100) {
-            return { icon: isCharging ? '󰂋' : '󰂂', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
-        }
-
-        return { icon: isCharging ? '󰂄' : '󰁹', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
+        return { icon: isCharging ? '󰂅' : '󰁹', hint: isCharging ? IconColorHint.NORMAL : IconColorHint.NORMAL };
     }
 
     getChargeRateIcon() {
