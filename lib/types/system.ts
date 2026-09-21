@@ -40,7 +40,8 @@ export enum OutputModeState {
 export enum CpuProfile {
     QUIET = 'apathyos-quiet',
     BALANCED = 'apathyos-balanced',
-    PERFORMANCE = 'apathyos-performance'
+    PERFORMANCE = 'apathyos-performance',
+    MAX_POWER = 'apathyos-max'
 }
 
 export enum SystemInhibitorType {

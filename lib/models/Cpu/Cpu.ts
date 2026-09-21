@@ -84,6 +84,9 @@ export class Cpu {
             case CpuProfile.PERFORMANCE:
                 icon.icon = '󰓅';
                 break;
+            case CpuProfile.MAX_POWER:
+                icon.icon = '󰈸';
+                break;
         }
 
         return icon;

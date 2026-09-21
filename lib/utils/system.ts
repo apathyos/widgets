@@ -21,9 +21,10 @@ export const getSortedCpuProfilesList = (profiles: CpuProfile[]) => {
         [CpuProfile.QUIET]: 1,
         [CpuProfile.BALANCED]: 2,
         [CpuProfile.PERFORMANCE]: 3,
+        [CpuProfile.MAX_POWER]: 4,
     };
 
-    return profiles.toSorted((a, b) => weights[a] - weights[b]);
+    return profiles.filter(p => weights[p]).toSorted((a, b) => weights[a] - weights[b]);
 };
 
 export const getXDGSessionId = () => {
