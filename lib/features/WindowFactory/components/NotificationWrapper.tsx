@@ -3,6 +3,7 @@ import { WindowType } from '../../../types/windowing';
 import { NotificationCommand } from '../../../models/Notification/types/windowing';
 import { NotificationToast } from '../../../shared';
 import { IWindowFactoryComponentWrapper } from '../types';
+import { updateAccessor } from '@/utils/misc';
 
 export interface INotificationWrapper extends IWindowFactoryComponentWrapper<WindowType.NOTIFICATION> {}
 
@@ -15,6 +16,8 @@ export function NotificationWrapper(props: INotificationWrapper) {
     const [summary, setSummary] = createState(descriptor.props.summary);
     const [body, setBody] = createState(descriptor.props.body);
     const [isHovered, setIsHovered] = createState(false);
+
+    const isReplay = descriptor.props.isReplay;
 
     const toggleHovered = (value: boolean) => {
         setIsHovered(value);
@@ -36,7 +39,7 @@ export function NotificationWrapper(props: INotificationWrapper) {
     return (
         <NotificationToast
             variant={descriptor.props.variant}
-            title={title}
+            title={updateAccessor(title, title => title && isReplay ? `󰑖  ${title}` : title)}
             summary={summary}
             body={body}
             isExpanded={isHovered}

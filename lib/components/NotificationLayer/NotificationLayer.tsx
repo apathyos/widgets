@@ -12,14 +12,16 @@ import {
     getDontDisturbCommandResponse,
     getIsDismissAllNotificationsCommandRequest
 } from '../../rpc';
-import { insertToArray, unpackAccessor } from '../../utils/misc';
+import { compareByWeights, unpackAccessor } from '../../utils/misc';
 import { INotification, NotificationCategory } from '../../types/notification';
-import { Delay, Position } from '../../types/common';
+import { Delay } from '../../types/common';
 import { useWindowSystem } from '../../contexts/windowing';
 import { WindowType } from '../../types/windowing';
 import { NotificationCommand } from '../../models/Notification/types/windowing';
 import { onCleanup } from 'ags';
 import { NotificationWindow } from '../../features';
+import { uniqBy } from 'lodash';
+import { getNotificationWeights } from '@/utils/system';
 
 const NotificationService = Notifd.get_default();
 
@@ -70,6 +72,7 @@ export function NotificationLayer() {
 
             if (activeNotif && newNotif && activeNotif.id === newNotif.id) {
                 updateNotification(String(activeNotif.id), newNotif);
+                timerRef?.cancel();
             } else {
                 closeActiveNotification();
                 setActiveNotification(newNotif);
@@ -83,38 +86,42 @@ export function NotificationLayer() {
     };
 
     const notifServiceNotifiedSub = NotificationService.connect('notified', (service, id) => {
-        const activeNotif = unpackAccessor(activeNotification);
+        if (!unpackAccessor(canShowNotification)) {
+            return;
+        }
+
         const newNotification = service.get_notification(id);
 
         if (!newNotification) {
             return;
         }
 
-        let shouldDisplay = false;
+        const activeNotif = unpackAccessor(activeNotification);
+        let shouldDisplayNow = false;
 
-        if (newNotification.urgency === Notifd.Urgency.CRITICAL) {
-            shouldDisplay = activeNotif?.urgency !== Notifd.Urgency.CRITICAL;
-
-            const lastCritNotifIdx = notificationsQueue.findIndex(n => n.urgency === Notifd.Urgency.CRITICAL);
-
-            if (lastCritNotifIdx >= 0) {
-                notificationsQueue = insertToArray(notificationsQueue, newNotification, Position.AFTER, lastCritNotifIdx);
-            } else {
-                if (activeNotif && activeNotif.urgency !== Notifd.Urgency.CRITICAL) {
-                    notificationsQueue.unshift(newNotification, activeNotif);
-                } else {
-                    notificationsQueue.unshift(newNotification);
-                }
-            }
-        } else {
-            notificationsQueue.push(newNotification);
+        if (!activeNotif) {
+            // If there is no displaying notification we should show this one
+            shouldDisplayNow = true;
+        } else if (compareByWeights(getNotificationWeights(newNotification), getNotificationWeights(activeNotif))) {
+            // Show new notification if it is more important than the current one
+            shouldDisplayNow = true;
+        } else if (newNotification.category === NotificationCategory.OSD) {
+            // Show OSD notifications
+            shouldDisplayNow = true;
         }
 
-        if (!activeNotif || newNotification.category === NotificationCategory.OSD) {
-            shouldDisplay = true;
+        const newNotificationsQueue = [...notificationsQueue, newNotification];
+
+        if (activeNotif && shouldDisplayNow) {
+            activeNotif.isReplay = true;
+            newNotificationsQueue.push(activeNotif);
         }
 
-        if (shouldDisplay) {
+        notificationsQueue = uniqBy(newNotificationsQueue.toSorted(
+            (a, b) => compareByWeights(getNotificationWeights(a), getNotificationWeights(b))
+        ), v => v.id);
+
+        if (shouldDisplayNow) {
             shouldPop = true;
             popNotification(Delay.ZERO);
         }
@@ -143,6 +150,8 @@ export function NotificationLayer() {
         if (unpackAccessor(dontDisturb)) {
             popNotification(Delay.ZERO);
         }
+
+        notificationsQueue = [];
     });
 
     const idleStatusCommandSub = app.connect('request', handleRequest(getIsIdleStatusCommandRequest, async (request) => {

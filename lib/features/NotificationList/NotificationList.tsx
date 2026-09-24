@@ -67,7 +67,7 @@ export function NotificationList(props: INotificationList) {
                 >
                     <For each={toAccessor(groupsIdx)}>
                         {(idx: number) => {
-                            const group = notificationsGroups(v => v[idx]);
+                            const group = notificationsGroups(v => v[idx] ?? []);
                             const appName = group(v => v[0]?.appName);
 
                             return (

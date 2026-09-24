@@ -76,15 +76,6 @@ export const insertToArray = <T, U>(
             targetIdx = i;
         }
 
-        if (targetIdx < 0) {
-            continue;
-        }
-
-        if (i < targetIdx) {
-            newArr.push(arrayItem);
-            continue;
-        }
-
         if (i === targetIdx) {
             if (position === Position.BEFORE) {
                 newArr.push(...itemsToInsert, arrayItem);
@@ -111,4 +102,21 @@ export const getUnpackedNumber = (value: unknown): number => {
     }
 
     return Number(value);
+};
+
+export const compareByWeights = (a: number[], b: number[]) => {
+    const weightsCount = Math.max(a.length, b.length);
+
+    for (let i = 0; i < weightsCount; i++) {
+        const ia = a[i] ?? b[i];
+        const ib = b[i] ?? a[i];
+
+        const diff = ia - ib;
+
+        if (diff !== 0) {
+            return diff;
+        }
+    }
+
+    return 0;
 };

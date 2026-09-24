@@ -44,7 +44,8 @@ export function NotificationWindow(props: INotificationWindow) {
                 variant: Notification.getNotificationVariant({ notification: notif }),
                 title: notif.appName,
                 summary: notif.summary,
-                body: notif.body
+                body: notif.body,
+                isReplay: notif.isReplay
             }
         }, (context) => new NotificationController(context));
 

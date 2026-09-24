@@ -18,4 +18,5 @@ export type NotificationWindowOpenCommandProps = Serializable<{
     title: string;
     summary?: string;
     body: string;
+    isReplay?: boolean;
 }>;

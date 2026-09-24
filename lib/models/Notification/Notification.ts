@@ -1,4 +1,4 @@
-import Notifd from 'gi://AstalNotifd?version=0.1';
+import type Notifd from 'gi://AstalNotifd?version=0.1';
 
 import { execAsync } from 'ags/process';
 import { INotification, NotificationCategory } from '../../types/notification';

@@ -1,5 +1,7 @@
 import GLib from 'gi://GLib';
 import { CpuProfile, GpuMode } from '../types/system';
+import { INotification, NotificationCategory } from '@/types/notification';
+import Notifd from 'gi://AstalNotifd?version=0.1';
 
 export const toGpuMode = (mode: string) => {
     switch (mode) {
@@ -46,4 +48,24 @@ export const getSystemLocale = () => {
         GLib.getenv('LANG') ??
         'C'
     );
+};
+
+export const getNotificationWeights = (notification: INotification) => {
+    const timestamp = -notification.time;
+
+    const categoryWeights = {
+        [NotificationCategory.OSD]: 1,
+    };
+
+    const urgencyWeights = {
+        [Notifd.Urgency.CRITICAL]: 1,
+        [Notifd.Urgency.NORMAL]: 2,
+        [Notifd.Urgency.LOW]: 3,
+    };
+
+    if (notification.category === NotificationCategory.OSD) {
+        return [0, categoryWeights[notification.category], timestamp];
+    }
+
+    return [1, urgencyWeights[notification.urgency], timestamp];
 };

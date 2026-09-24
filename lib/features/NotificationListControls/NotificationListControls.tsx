@@ -1,4 +1,4 @@
-import { createState, With } from 'gnim';
+import { createState, onCleanup, With } from 'gnim';
 import { Notification } from '../../models/Notification';
 import { DotsSpinner, SymbolButton } from '../../shared';
 import { Classes } from '../../types/utils';
@@ -21,8 +21,12 @@ export function NotificationListControls(props: INotificationListControls) {
     const [notifications, setNotifications] = createState(notification.getNotifications());
     const [isDeleting, setIsDeleting] = createState(false);
 
-    NotificationService.connect('notify', () => {
+    const notifySub = NotificationService.connect('notify', () => {
         setNotifications(notification.getNotifications());
+    });
+
+    onCleanup(() => {
+        NotificationService.disconnect(notifySub);
     });
 
     return (
