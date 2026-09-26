@@ -1,11 +1,11 @@
 import { TrayType } from '../../types/tray';
 import { trays } from '../../config/tray';
 import { toAccessor, updateAccessor } from '../../utils/misc';
-// import { ITabs, SymbolButton, Tabs } from '../../shared';
 import { SymbolButton } from '../../shared';
 import { Classes, PropertyValue } from '../../types/utils';
 import cn from 'classnames';
 import { Spacing } from '@/types/common';
+import { Gtk } from 'ags/gtk4';
 
 export interface ITraySelector {
     activeTray: PropertyValue<TrayType>;
@@ -16,23 +16,12 @@ export interface ITraySelector {
 export function TraySelector(props: ITraySelector) {
     const { activeTray, onSelect, classes } = props;
 
-    // const items: ITabs<object, TrayType>['items'] = trays.map(({ name, value, Icon }) => ({
-    //     name,
-    //     value,
-    //     component: typeof Icon === 'function' ? <Icon /> : <label label={Icon} />
-    // }));
-
     return (
-        // <Tabs
-        //     active={activeTray}
-        //     items={items}
-        //     classes={{
-        //         root: updateAccessor(classes?.root, root => cn(root, 'tray-selector')),
-        //         item: updateAccessor(classes?.button, button => cn(button, 'tray-selector__button'))
-        //     }}
-        //     onSelect={item => onSelect(item.value)}
-        // />
-        <box class={updateAccessor(classes?.root, (root) => cn(root, 'tray-selector'))} spacing={Spacing.M}>
+        <box
+            class={updateAccessor(classes?.root, (root) => cn(root, 'tray-selector'))}
+            spacing={Spacing.S}
+            valign={Gtk.Align.CENTER}
+        >
             {trays.map(({ value, Icon }) => (
                 <SymbolButton
                     classes={{
