@@ -21,6 +21,7 @@ export function CpuProfileSwitcherDropdownButton(props: ICpuProfileSwitcherDropd
     const [cpuProfiles, setCpuProfiles] = createState<CpuProfile[]>([]);
     const [activeProfile, setActiveProfile] = createState(CpuProfile.BALANCED);
     const [icon, setIcon] = createState(cpu.getProfileIcon({ profile: unpackAccessor(activeProfile) }));
+    const [isInit, setIsInit] = createState(false);
     const [loading, setLoading] = createState<string | null>(null);
 
     const values = stableAccessor(cpuProfiles);
@@ -33,7 +34,10 @@ export function CpuProfileSwitcherDropdownButton(props: ICpuProfileSwitcherDropd
         setIcon(cpu.getProfileIcon({ profile }));
     };
 
-    createEffect(refreshState);
+    createEffect(async () => {
+        await refreshState();
+        setIsInit(true);
+    });
 
     return (
         <IconDropDownButton
@@ -41,6 +45,7 @@ export function CpuProfileSwitcherDropdownButton(props: ICpuProfileSwitcherDropd
             label={activeProfile(v => getCpuProfileDisplayValue(v))}
             values={values}
             isRootMounted={isRootMounted}
+            isLoading={isInit(v => !v)}
             hexpand={hexpand}
             classes={{
                 root: updateAccessor(classes?.root, (root) => cn(root, 'cpu-profile-switcher-dropdown-button')),
