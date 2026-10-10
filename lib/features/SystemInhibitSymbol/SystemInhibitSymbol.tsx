@@ -6,9 +6,9 @@ import { createComputed, createEffect, createState, onCleanup } from 'gnim';
 import { handleRequest } from '@/rpc/utils';
 import { getIsSetActiveSystemInhibitorsCommandRequest } from '@/rpc';
 
-export interface ISystemInhibitIcon extends Pick<ISymbol, 'classes'> {}
+export interface ISystemInhibitSymbol extends Pick<ISymbol, 'classes'> {}
 
-export function SystemInhibitIcon(props: ISystemInhibitIcon) {
+export function SystemInhibitSymbol(props: ISystemInhibitSymbol) {
     const { classes } = props;
 
     const [activeInhibitors, setActiveInhibitors] = createState<SystemInhibitor[]>([]);

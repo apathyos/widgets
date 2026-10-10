@@ -52,7 +52,6 @@ export function withPinned<P, T extends IList<P>>(Component: (props: FCProps<Gtk
                 </box>
 
                 <Revealer
-                    lazy
                     visible={toAccessor(restItemsValues)(v => !!v.length)}
                     isRevealed={isRevealed}
                     transitionType={transitionType}

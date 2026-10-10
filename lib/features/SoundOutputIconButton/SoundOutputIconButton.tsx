@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { SymbolButton } from '../../shared';
+import { Symbol } from '../../shared';
 import WP from 'gi://AstalWp?version=0.1';
 import { SoundOutput } from '../../models/SoundOutput';
 import { createState } from 'gnim';
@@ -29,13 +29,9 @@ export function SoundOutputIconButton(props: ISoundOutputIconButton) {
     });
 
     return (
-        <SymbolButton
+        <Symbol
             classes={{ root: cn(classes?.root, 'sound-output-button') }}
-        >
-            <label
-                class={cn(classes?.label, 'sound-output-button__label')}
-                label={icon(v => v.icon)}
-            />
-        </SymbolButton>
+            label={icon(v => v.icon)}
+        />
     );
 }

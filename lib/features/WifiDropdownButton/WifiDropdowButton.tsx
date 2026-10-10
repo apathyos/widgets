@@ -46,8 +46,8 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
         setIcon(wifi.getIcon());
     };
 
-    NetworkService.wifi?.connect('notify', refresh);
-    NetworkService.client.connect('notify::active-connections', refresh);
+    const wifiSub = NetworkService.wifi?.connect('notify', refresh);
+    const activeConnectionsSub = NetworkService.client.connect('notify::active-connections', refresh);
 
     const label = createComputed((get) => {
         const connections = get(activeConnections);
@@ -59,6 +59,8 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
 
     onCleanup(() => {
         scanTimer?.cancel();
+        typeof wifiSub === 'number' && NetworkService.wifi?.disconnect(wifiSub);
+        NetworkService.client.disconnect(activeConnectionsSub);
     });
 
     return (

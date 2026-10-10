@@ -37,7 +37,7 @@ export function BluetoothDropdownButton(props: IBluetoothDropdownButton) {
         setIcon(bluetooth.getIcon());
     };
 
-    BluetoothService.connect('notify', refresh);
+    const btSub = BluetoothService.connect('notify', refresh);
 
     const label = createComputed((get) => {
         return get(isEnabled)
@@ -49,6 +49,7 @@ export function BluetoothDropdownButton(props: IBluetoothDropdownButton) {
 
     onCleanup(() => {
         discoveryTimer?.cancel();
+        BluetoothService.disconnect(btSub);
     });
 
     return (

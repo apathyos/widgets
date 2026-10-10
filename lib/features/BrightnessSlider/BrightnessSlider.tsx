@@ -1,12 +1,9 @@
-import app from 'ags/gtk4/app';
 import { SymbolSlider } from '../../shared';
 import { Display } from '../../models/Display';
 import { createEffect, createState } from 'gnim';
 import { Classes } from '../../types/utils';
 import { unpackAccessor, updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
-import { handleRequest } from '../../rpc/utils';
-import { getIsSetOutputsCommandRequest } from '../../rpc';
 
 export interface IBrightnessSlider {
     classes?: Classes<'root' | 'label'>;
@@ -26,10 +23,6 @@ export function BrightnessSlider(props: IBrightnessSlider) {
         setMaxBrightness(await display.getMaxBrightness());
         setCurrentBrightness(await display.getDeviceBrightness());
     });
-
-    app.connect('request', handleRequest(getIsSetOutputsCommandRequest, async () => {
-        // setCurrentBrightness(await display.getDeviceBrightness());
-    }));
 
     const brightnessIcon = display.getBrightnessIcon();
 

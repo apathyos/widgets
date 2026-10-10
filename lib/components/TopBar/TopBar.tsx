@@ -5,7 +5,7 @@ import {
     CpuTemp,
     DontDisturbButton,
     KeyboardButton,
-    SoundOutputButton,
+    SoundOutputSymbol,
     WifiButton,
     Worskpaces,
     BatteryButton,
@@ -15,7 +15,7 @@ import {
     ChargeRate,
     NightShiftButton,
     ScreenRecordButton,
-    SystemInhibitIcon,
+    SystemInhibitSymbol,
 } from '../../features';
 import { Section, SectionBar } from '../../shared';
 import { Date } from '../../features/Date/Date';
@@ -53,8 +53,8 @@ export function TopBar(props: ITopBar) {
                     </Section>
                     <Section spacing={Spacing.S}>
                         <ScreenRecordButton />
-                        <SystemInhibitIcon />
-                        <SoundOutputButton />
+                        <SystemInhibitSymbol />
+                        <SoundOutputSymbol />
                         <DontDisturbButton />
                         <VolumeButton />
                         <NightShiftButton />

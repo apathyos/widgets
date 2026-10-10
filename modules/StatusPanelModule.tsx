@@ -1,10 +1,10 @@
 import app from 'ags/gtk4/app';
 import { StatusPanel } from '../lib/components';
-import { Astal, Gdk } from 'ags/gtk4';
-import { createState, With } from 'gnim';
+import { Astal, Gdk, Gtk } from 'ags/gtk4';
+import { createComputed, createState } from 'gnim';
 import { timeout, Timer } from 'ags/time';
-import { TRANSITION_NORMAL } from '../lib/constants/widget';
-import { Window } from '../lib/shared';
+import { STATUS_PANEL_HEIGHT_MULTIPLIER, TOP_BAR_HEIGHT, TRANSITION_NORMAL } from '../lib/constants/widget';
+import { Revealer, Window } from '../lib/shared';
 import { handleRequest } from '../lib/rpc/utils';
 import {
     getIsSetStatusPanelOpenedCommandRequest,
@@ -12,6 +12,7 @@ import {
     sendStatusPanelOpenedQueryResponse
 } from '../lib/rpc';
 import { unpackAccessor } from '../lib/utils/misc';
+import { Spacing } from '@/types/common';
 
 export function StatusPanelModule() {
     const { TOP, RIGHT } = Astal.WindowAnchor;
@@ -20,6 +21,8 @@ export function StatusPanelModule() {
     const [isPanelVisible, setIsPanelVisible] = createState(false);
     const [isPanelOpened, setIsPanelOpened] = createState(false);
 
+    const activeMonitorHeight = createComputed(get => get(activeMonitor)?.geometry.height ?? 0);
+    const isRevealed = createComputed(get => !!(get(isPanelOpened) && get(activeMonitor)));
     let panelVisibilityTimer: Timer | null = null;
 
     app.connect(
@@ -67,15 +70,23 @@ export function StatusPanelModule() {
             keymode={Astal.Keymode.ON_DEMAND}
             onVisible={({ monitor }) => setActiveMonitor(monitor)}
         >
-            <With value={isPanelVisible}>
-                {isPanelVisible => isPanelVisible ? (
-                    <StatusPanel
-                        isOpened={isPanelOpened}
-                        windowHeight={activeMonitor(v => v?.geometry.height ?? 0)}
-                        windowWidth={activeMonitor(v => v?.geometry.width ?? 0)}
-                    />
-                ) : null}
-            </With>
+            <Revealer
+                isRevealed={isRevealed}
+                transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+                margin={{
+                    top: activeMonitorHeight((v) => Math.max(
+                        0,
+                        Math.round((v - v * STATUS_PANEL_HEIGHT_MULTIPLIER) / 2 - TOP_BAR_HEIGHT)
+                    )),
+                }}
+                css={createComputed((get) => `min-height: ${get(activeMonitorHeight) * STATUS_PANEL_HEIGHT_MULTIPLIER}px;`)}
+            >
+                {() => (
+                    <box marginEnd={isRevealed(v => v ? Spacing.L : 0)}>
+                        <StatusPanel isOpened={isRevealed} />
+                    </box>
+                )}
+            </Revealer>
         </Window>
     );
 }

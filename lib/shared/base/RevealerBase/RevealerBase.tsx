@@ -36,7 +36,7 @@ export function RevealerBase(props: IRevealerBase) {
         margin,
         heightRequest,
         widthRequest,
-        lazy,
+        lazy = true,
         css,
         classes,
         onMouseEnter,
@@ -50,6 +50,10 @@ export function RevealerBase(props: IRevealerBase) {
     const { onSetup } = useSetupControllers({ onMouseEnter, onMouseLeave });
 
     createEffect(() => {
+        if (!unpackAccessor(lazy, true)) {
+            return;
+        }
+
         timerRef?.cancel();
 
         const revealed = unpackAccessor(isRevealed, true);

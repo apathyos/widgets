@@ -1,4 +1,4 @@
-import { createComputed, createState } from 'gnim';
+import { createComputed, createState, onCleanup } from 'gnim';
 import { IconDropDownButton, IIconDropDownButton } from '../../shared';
 import Network from 'gi://AstalNetwork?version=0.1';
 import { Classes } from '../../types/utils';
@@ -29,7 +29,7 @@ export function VpnDropdownButton(props: IVpnDropdownButton) {
 
     const values = stableAccessor(connections, { compose: connections => [...connections.keys()] });
 
-    NetworkService.client.connect('notify', () => {
+    const clientSub = NetworkService.client.connect('notify', () => {
         resetConnections();
         setIsConnected(vpn.getIsConnected());
         setIcon(vpn.getIcon());
@@ -40,6 +40,10 @@ export function VpnDropdownButton(props: IVpnDropdownButton) {
         const activeConnections = vpn.getActiveConnections();
 
         return connected ? getStringList(activeConnections, item => item.get_id()) : 'not connected';
+    });
+
+    onCleanup(() => {
+        NetworkService.client.disconnect(clientSub);
     });
 
     return (

@@ -36,12 +36,16 @@ export function DpmsPopupButton<P>(props: IDpmsPopupButton<P>) {
         setOutputs(await display.getOutputsInfo({ state: payload }));
     }));
 
-    app.connect('request', handleRequest(getIsSetOutputsCommandRequest, async (request) => {
-        setOutputs(request.system.outputs);
-    }));
+    const getIsSetOutputsCommandRequestSub = app.connect('request', handleRequest(
+        getIsSetOutputsCommandRequest,
+        async (request) => {
+            setOutputs(request.system.outputs);
+        }
+    ));
 
     onCleanup(() => {
         outputsListenerDispose();
+        app.disconnect(getIsSetOutputsCommandRequestSub);
     });
 
     return (

@@ -2,7 +2,7 @@ import WP from 'gi://AstalWp?version=0.1';
 import { SymbolSlider } from '../../shared';
 import { Volume } from '../../models/Volume';
 import { SoundOutput } from '../../models/SoundOutput';
-import { createComputed, createState } from 'gnim';
+import { createComputed, createState, onCleanup } from 'gnim';
 import { Classes } from '../../types/utils';
 import { unpackAccessor, updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
@@ -22,6 +22,8 @@ export function VolumeSlider(props: IVolumeSlider) {
     const [currentVolume, setCurrentVolume] = createState(output.getDefaultSpeaker().volume);
     const [isMuted, setIsMuted] = createState(output.getDefaultSpeaker().mute);
 
+    const defaultMic = output.getDefaultMic();
+    const defaultSpeaker = output.getDefaultSpeaker();
     const volumeIcon = createComputed((get) => volume.getOutputIcon({ volume: get(currentVolume), isMuted: get(isMuted) }));
 
     const updateState = () => {
@@ -35,8 +37,13 @@ export function VolumeSlider(props: IVolumeSlider) {
         setIsMuted(currentSpeaker.mute);
     };
 
-    output.getDefaultMic().connect('notify', updateState);
-    output.getDefaultSpeaker().connect('notify', updateState);
+    const micSub = defaultMic.connect('notify', updateState);
+    const speakerSub = defaultSpeaker.connect('notify', updateState);
+
+    onCleanup(() => {
+        defaultMic.disconnect(micSub);
+        defaultSpeaker.disconnect(speakerSub);
+    });
 
     return (
         <SymbolSlider

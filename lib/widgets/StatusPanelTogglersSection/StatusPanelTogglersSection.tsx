@@ -2,7 +2,7 @@ import { Section } from '../../shared';
 import { Classes } from '../../types/utils';
 import { updateAccessor } from '../../utils/misc';
 import cn from 'classnames';
-import { DontDisturbButton, SoundOutputButton } from '../../features';
+import { DontDisturbButton, SoundOutputSymbol } from '../../features';
 import { Spacing } from '@/types/common';
 
 export interface IStatusPanelTogglersSection {
@@ -20,7 +20,7 @@ export function StatusPanelTogglersSection(props: IStatusPanelTogglersSection) {
         >
             <box spacing={Spacing.L}>
                 <DontDisturbButton classes={{ root: 'status-panel-togglers-section__button' }} />
-                <SoundOutputButton classes={{ root: 'status-panel-togglers-section__button' }} />
+                <SoundOutputSymbol classes={{ root: 'status-panel-togglers-section__button' }} />
             </box>
         </Section>
     );

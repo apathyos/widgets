@@ -9,6 +9,7 @@ import { Astal } from 'ags/gtk4';
 import { Align, Offset, Placement } from '../../types/common';
 import cn from 'classnames';
 import { TransitionOptions } from '../../types/widget';
+import { Revealer } from '../Revealer';
 
 export interface IFloated {
     children: (args: {
@@ -146,7 +147,7 @@ export function Floated(props: IFloated) {
         }
     };
 
-    const FloatContent = (
+    const FloatContent = () => (
         <Gtk.Box
             $={self => (contentContainerRef = self)}
             orientation={contentOrientation}
@@ -210,15 +211,15 @@ export function Floated(props: IFloated) {
         <With value={toAccessor(transitionOptions)}>
             {(transitionOptions: TransitionOptions) => transitionOptions.enabled
                 ? (
-                    <revealer
-                        revealChild={isRevealed}
+                    <Revealer
+                        isRevealed={isRevealed}
                         transitionType={transitionOptions.type ?? Gtk.RevealerTransitionType.CROSSFADE}
-                        transition_duration={transitionOptions.duration ?? 0}
+                        transitionDuration={transitionOptions.duration ?? 0}
                         hexpand
                     >
-                        {FloatContent}
-                    </revealer>
-                ) : FloatContent
+                        {() => FloatContent()}
+                    </Revealer>
+                ) : FloatContent()
             }
         </With>
     </Window>;
