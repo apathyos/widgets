@@ -46,6 +46,7 @@ export function InputModal(props: IInputModal) {
                     text={text}
                     placeholder={placeholder}
                     isFocused={isFocused}
+                    isDisabled={isLoading}
                     info={info}
                     onChange={({ value }) => {
                         setText(value);

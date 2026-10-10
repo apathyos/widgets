@@ -2,14 +2,25 @@
 @use '../../styles/colors.scss';
 @use '../../styles/geometry.scss';
 
-.input__field {
+.input {
+    &_disabled {
+        & .input__field {
+            outline-color: colors.$border;
+            opacity: 0.7;
+        }
+    }
+}
+
+.input__field entry {
     font-family: fonts.$font-family;
     outline-color: colors.$bg-alt-hover;
     min-height: geometry.$input-size-m;
+    border: 2px solid transparent;
 }
 
-.input__field_error {
-    outline-color: colors.$red;
+.input__field_error entry {
+    border-color: colors.$red;
+    outline-color: transparent;
 }
 
 .input__info-text {
