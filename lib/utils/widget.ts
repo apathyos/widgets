@@ -2,8 +2,9 @@ import { Astal, Gdk, Gtk } from 'ags/gtk4';
 import { Anchor, Element } from '../types/widget';
 import { getMonitorForSurface, getWidgetMonitor, getWidgetSurface } from './display';
 import GLib from 'gi://GLib?version=2.0';
-import { Margin } from '../types/common';
+import { Align, Margin, Placement } from '../types/common';
 import Pango from 'gi://Pango?version=1.0';
+import Graphene from 'gi://Graphene?version=1.0';
 
 export const getWidgetAbsolutePosition = (widget: Gtk.Widget) => {
     const root = widget.get_root();
@@ -16,7 +17,10 @@ export const getWidgetAbsolutePosition = (widget: Gtk.Widget) => {
         return { top: 0, left: 0, bottom: 0, right: 0 };
     }
 
-    const [_, left, top] = widget.translate_coordinates(root, 0, 0);
+    const [_, point] = widget.compute_point(root, new Graphene.Point({ x: 0, y: 0 }));
+
+    const left = point.x;
+    const top = point.y;
 
     if (!monitor) {
         return position;
@@ -36,17 +40,17 @@ export const getWidgetAbsolutePosition = (widget: Gtk.Widget) => {
         return position;
     }
 
-    const rootAlloc = root.get_allocation();
+    const rootAlloc = root.compute_bounds(root)[1];
 
     if (anchor === Anchor.TOP_RIGHT) {
-        position.left += mgeo.width - rootAlloc.width;
+        position.left += mgeo.width - rootAlloc.get_width();
     }
 
     return position;
 };
 
 export const trackWidgetSurfaceMonitorAttachment = (
-    widget: Gtk.Widget | Astal.Window,
+    widget: Element,
     onAttach: (monitor: Gdk.Monitor) => void
 ) => {
     let surface: Gdk.Surface | null | undefined = null;
@@ -106,7 +110,9 @@ export const trackWidgetSurfaceMonitorAttachment = (
         GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, recompute);
     }
 
+    //@ts-expect-error wrong type inference
     widget.connect('realize', attach);
+    //@ts-expect-error wrong type inference
     widget.connect('unrealize', detach);
 
     if (getWidgetSurface(widget)) {
@@ -293,4 +299,60 @@ export const getLimitedLayoutHeight = (args: {
     const bottomPx = Math.ceil(lastVisibleBottom / Pango.SCALE);
 
     return Math.max(0, bottomPx - topPx);
+};
+
+export const getWidgetAnchoredPosition = (args: {
+    anchor: Element;
+    widget: Element;
+    placement?: Placement;
+    alignment?: Align;
+    offset?: number;
+}) => {
+    const {
+        anchor,
+        widget,
+        placement = Placement.BOTTOM,
+        alignment = Align.CENTER,
+        offset = 0
+    } = args;
+
+    const { top, left } = getWidgetAbsolutePosition(anchor);
+    const anchorBounds = anchor.compute_bounds(anchor)[1];
+    const widgetBounds = widget.compute_bounds(widget)[1];
+
+    const anchorGeometry = { width: anchorBounds.get_width(), height: anchorBounds.get_height() };
+    const widgetGeometry = { width: widgetBounds.get_width(), height: widgetBounds.get_height() };
+
+    let widgetTop = top;
+    let widgetLeft = left;
+
+    if (placement === Placement.TOP) {
+        widgetTop = top - widgetGeometry.height - offset;
+    } else if (placement === Placement.BOTTOM) {
+        widgetTop = top + anchorGeometry.height + offset;
+    } else if (placement === Placement.LEFT) {
+        widgetLeft = left - widgetGeometry.width - offset;
+    } else if (placement === Placement.RIGHT) {
+        widgetLeft = left + anchorGeometry.width + offset;
+    }
+
+    if (placement === Placement.TOP || placement === Placement.BOTTOM) {
+        if (alignment === Align.START) {
+            widgetLeft = left;
+        } else if (alignment === Align.END) {
+            widgetLeft = left + anchorGeometry.width;
+        } else {
+            widgetLeft = left - Math.abs(widgetGeometry.width - anchorGeometry.width) / 2;
+        }
+    } else {
+        if (alignment === Align.START) {
+            widgetTop = top;
+        } else if (alignment === Align.END) {
+            widgetTop = top + anchorGeometry.height;
+        } else {
+            widgetTop = top - Math.abs(widgetGeometry.height - anchorGeometry.height) / 2;
+        }
+    }
+
+    return { top: widgetTop, left: widgetLeft };
 };

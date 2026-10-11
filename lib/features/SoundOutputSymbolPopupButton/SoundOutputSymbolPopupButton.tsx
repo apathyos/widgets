@@ -5,8 +5,9 @@ import { Classes } from '../../types/utils';
 import { createState, onCleanup } from 'gnim';
 import { Gtk } from 'ags/gtk4';
 import { Placement } from '../../types/common';
-import { stableAccessor, unpackAccessor } from '@/utils/misc';
+import { stableAccessor, unpackAccessor, updateAccessor } from '@/utils/misc';
 import { isNonNullableAccessor } from '@/utils/typeguards';
+import cn from 'classnames';
 
 const WirePlumberService = WP.get_default();
 
@@ -21,6 +22,8 @@ export interface ISoundOutputSymbolPopupButton extends Pick<
     }
 
 export function SoundOutputSymbolPopupButton(props: ISoundOutputSymbolPopupButton) {
+    const { classes } = props;
+
     const soundOutput = new SoundOutput(WirePlumberService);
 
     const [outputs, setOutputs] = createState(soundOutput.getOutputs());
@@ -67,8 +70,13 @@ export function SoundOutputSymbolPopupButton(props: ISoundOutputSymbolPopupButto
                 output?.set_is_default(true);
             }}
             popupPlacement={Placement.BOTTOM}
+            valign={Gtk.Align.CENTER}
+            halign={Gtk.Align.CENTER}
+            classes={{
+                root: updateAccessor(classes?.root, root => cn(root, 'sound-output-symbol-popup-button'))
+            }}
         >
-            <label label={icon(v => v.icon)} hexpand halign={Gtk.Align.CENTER} />
+            <label label={icon(v => v.icon)} hexpand halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} />
         </SymbolPopupButton>
     );
 }

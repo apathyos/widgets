@@ -17,6 +17,8 @@ export interface IPopupButtonBase<P = object> extends IButtonBase {
     transitionDuration?: PropertyValue<Transition>;
     popupAlign?: IFloated['align'];
     popupPlacement?: IFloated['placement'];
+    valign?: PropertyValue<Gtk.Align>;
+    halign?: PropertyValue<Gtk.Align>;
     getItem: ISelectList<P>['getItem'];
     onToggle?: (isOpened: boolean) => void;
     onSelect?: ISelectList<P>['onSelect'];
@@ -30,6 +32,8 @@ export function PopupButtonBase<P>(props: IPopupButtonBase<P>) {
         transitionDuration = Transition.FAST,
         popupAlign,
         popupPlacement,
+        valign,
+        halign,
         getItem
     } = props;
 
@@ -42,7 +46,7 @@ export function PopupButtonBase<P>(props: IPopupButtonBase<P>) {
     }));
 
     return (
-        <box $={setButtonRef}>
+        <box $={setButtonRef} valign={valign} halign={halign}>
             <Floated
                 anchorRef={buttonRef}
                 onOpen={({ shouldOpen }) => onToggle?.(shouldOpen)}

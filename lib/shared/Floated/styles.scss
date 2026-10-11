@@ -1,5 +1,7 @@
 @use '../../styles/colors.scss';
 
+$arrow-size: var(--floated__arrow-size, 12px);
+
 .floated {
     opacity: 0.1;
 
@@ -20,21 +22,35 @@
     &_placement-right {
         transform: rotate(90deg);
     }
+
+    &_placement-top .floated__arrow_top,
+    &_placement-bottom .floated__arrow_top {
+        margin-top: -1px;
+    }
+
+    &_placement-left .floated__arrow_bottom,
+    &_placement-right .floated__arrow_bottom {
+        margin-top: calc(-1 * $arrow-size);
+    }
+
+    &_placement-left .floated__arrow_top,
+    &_placement-right .floated__arrow_top {
+        margin-top: calc(-1 * $arrow-size + 1px);
+    }
 }
 
 .floated__arrow_bottom {
     min-width: 0;
     min-height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 12px solid colors.$border;
+    border-left: $arrow-size solid transparent;
+    border-right: $arrow-size solid transparent;
+    border-top: $arrow-size solid colors.$border;
 }
 
 .floated__arrow_top {
     min-width: 0;
     min-height: 0;
-    border-left: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-top: 9px solid colors.$bg;
-    margin-top: -1px;
+    border-left: calc($arrow-size - $arrow-size * 0.25) solid transparent;
+    border-right: calc($arrow-size - $arrow-size * 0.25) solid transparent;
+    border-top: calc($arrow-size - $arrow-size * 0.25) solid colors.$bg;
 }

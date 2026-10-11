@@ -2,7 +2,7 @@ import Gtk from 'gi://Gtk';
 import { createComputed, createState, With } from 'gnim';
 import { Classes, PropertyValue } from '../../types/utils';
 import { toAccessor, unpackAccessor, updateAccessor } from '../../utils/misc';
-import { getWidgetAbsolutePosition, trackWidgetSurfaceMonitorAttachment } from '../../utils/widget';
+import { getWidgetAnchoredPosition, trackWidgetSurfaceMonitorAttachment } from '../../utils/widget';
 import { timeout } from 'ags/time';
 import { Window } from '../Window';
 import { Astal } from 'ags/gtk4';
@@ -48,18 +48,8 @@ export function Floated(props: IFloated) {
     const [isOpened, setIsOpened] = createState(false);
     const [isVisible, setIsVisible] = createState(false);
     const [isRevealed, setIsRevealed] = createState(false);
-    const [elementPosition, setElementPosition] = createState({ top: 0, left: 0, bottom: 0, right: 0 });
+    const [elementPosition, setElementPosition] = createState({ top: 0, left: 0 });
     const [contentWidth, setContentWidth] = createState(0);
-
-    const anchor = createComputed<Astal.WindowAnchor>(get => {
-        const popupPlacement = get(toAccessor(placement));
-
-        if (popupPlacement === Placement.TOP) {
-            return Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.LEFT;
-        }
-
-        return Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT;
-    });
 
     const contentContainerCss = createComputed(get => `min-width: ${get(contentWidth)}px;`);
     const contentOrientation = createComputed(get => {
@@ -73,6 +63,7 @@ export function Floated(props: IFloated) {
     });
 
     let contentContainerRef: Gtk.Box | null = null;
+    const arrowSize = 12;
 
     toAccessor(isRootMounted).subscribe(() => {
         if (unpackAccessor(isRootMounted) === false) {
@@ -83,7 +74,6 @@ export function Floated(props: IFloated) {
 
     const onWindowVisible = () => {
         const anchorElement = unpackAccessor(anchorRef);
-        const elementAlign = unpackAccessor(align);
 
         if (!anchorElement || !contentContainerRef) {
             return;
@@ -94,30 +84,27 @@ export function Floated(props: IFloated) {
                 return;
             }
 
-            const offset = unpackAccessor(withArrow) ? Offset.XS : unpackAccessor(anchorOffset);
+            const anchorBounds = anchorElement.compute_bounds(anchorElement)[1];
+            const contentContainerBounds = contentContainerRef.compute_bounds(contentContainerRef)[1];
 
-            const { top, left, bottom, right } = getWidgetAbsolutePosition(anchorElement);
-            const anchorGeometry = anchorElement.get_allocation();
-            const contentContainerGeometry = contentContainerRef.get_allocation();
+            const anchorGeometry = {
+                width: anchorBounds.get_width(), height: anchorBounds.get_height()
+            };
+            const contentContainerGeometry = {
+                width: contentContainerBounds.get_width(), height: contentContainerBounds.get_height()
+            };
 
-            const elementTop = top + anchorGeometry.height + offset;
-            let elementLeft = left;
-            const elementBottom = bottom - anchorGeometry.height + offset;
-            const elementRight = right - anchorGeometry.width;
-
-            if (elementAlign === Align.START) {
-                elementLeft -= 0;
-            } else if (elementAlign === Align.END) {
-                elementLeft -= anchorGeometry.width;
-            } else {
-                elementLeft -= Math.abs(contentContainerGeometry.width - anchorGeometry.width - 1) / 2;
-            }
+            const { top: elementTop, left: elementLeft } = getWidgetAnchoredPosition({
+                anchor: anchorElement,
+                widget: contentContainerRef,
+                placement: unpackAccessor(placement),
+                alignment: unpackAccessor(align),
+                offset: unpackAccessor(anchorOffset)
+            });
 
             setElementPosition({
                 top: elementTop,
                 left: elementLeft,
-                bottom: elementBottom,
-                right: elementRight
             });
             setContentWidth(Math.max(anchorGeometry.width + 1, contentContainerGeometry.width));
             setIsVisible(true);
@@ -158,7 +145,7 @@ export function Floated(props: IFloated) {
                 {(placement) => placement === Placement.TOP || placement === Placement.LEFT ? floatContent({ toggleOpen }) : null}
             </With>
 
-            <box homogeneous>
+            <box homogeneous css={`--floated__arrow-size: ${arrowSize}px;`}>
                 <With value={toAccessor(withArrow)}>
                     {(withArrow: boolean) => withArrow ? (
                         <box
@@ -195,13 +182,15 @@ export function Floated(props: IFloated) {
     <Window
         classes={{ root: updateAccessor(isVisible, isVisible => cn('floated', isVisible && 'floated_visible')) }}
         isVisible={isOpened}
-        anchor={anchor}
+        anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT}
         canTarget
         margin={{
             top: elementPosition((v) => v.top),
-            left: elementPosition((v) => v.left),
-            bottom: elementPosition((v) => v.bottom),
-            right: elementPosition((v) => v.right)
+            left: elementPosition((v) => (
+                v.left
+                + (placement === Placement.LEFT ? arrowSize : 0)
+                + (placement === Placement.RIGHT ? -arrowSize : 0)
+            )),
         }}
         layer={Astal.Layer.TOP}
         keymode={Astal.Keymode.ON_DEMAND}
