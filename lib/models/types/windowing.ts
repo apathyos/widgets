@@ -1,3 +1,4 @@
+import { WindowController } from '@/controllers/Window';
 import { Dispose } from '../../types/common';
 import { WindowCommandResult, WindowOptions } from '../../types/windowing';
 import { WindowId, WindowType } from '../../types/windowing';
@@ -9,6 +10,7 @@ import {
 } from '../Modal/types/windowing';
 import { NotificationWindowCommand, NotificationWindowOpenCommandProps } from '../Notification/types/windowing';
 import { Window } from '../Window';
+import { SignalCallback } from '@/types/signal';
 
 export type AnyWindow = {
     [T in WindowType]: Window<T>;
@@ -19,6 +21,10 @@ export type WindowCommand = {
     [WindowType.ACTION_MODAL]: ActionModalWindowCommand;
     [WindowType.INPUT_MODAL]: InputModalWindowCommand;
 };
+
+export type AnyWindowCommand = {
+    [T in WindowType]: WindowCommand[T];
+}[WindowType];
 
 export type WindowOpenCommandProps = {
     [WindowType.NOTIFICATION]: NotificationWindowOpenCommandProps;
@@ -55,7 +61,7 @@ export type WindowProxy<T extends WindowType> = {
     done: WindowDone;
     send: (command: WindowCommand[T]) => Promise<WindowCommandResult>;
     close: () => Promise<WindowCommandResult>;
-    signal: (cb: WindowProxySignal<T>) => Dispose;
+    signal: (cb: SignalCallback<WindowCommand[T], WindowCommandResult>) => Dispose;
 };
 
 export type WindowSelfContext<T extends WindowType> = {
@@ -68,3 +74,5 @@ export type WindowSelfContext<T extends WindowType> = {
 export type WindowControllerContext<T extends WindowType> = {
     readonly self: WindowSelfContext<T>;
 };
+
+export type WindowControllerCreator<T extends WindowType> = (context: WindowControllerContext<T>) => WindowController<T>;

@@ -6,14 +6,18 @@ import { Gtk } from 'ags/gtk4';
 import { Item } from '../base/ListItemBase/types';
 import { Spacing } from '@/types/common';
 import cn from 'classnames';
-import { Classes } from '@/types/utils';
+import { Classes, PropertyValue } from '@/types/utils';
 import { SelectListItem as SelectListItemType } from './types';
 import { IListItem, ListItem } from '../ListItem';
+import Pango from 'gi://Pango?version=1.0';
 
 export interface ISelectListItem<
     P = object,
     I extends SelectListItemType<P> = SelectListItemType<P>
 > extends IListItem<P, I> {
+    maxWidthChar?: PropertyValue<number>;
+    ellipsize?: PropertyValue<Pango.EllipsizeMode>;
+    halign?: PropertyValue<Gtk.Align>;
     classes?: IListItem<P>['classes'] & Classes<'button'>;
     onSelect?: (item: Item<P>) => void;
 }
@@ -23,6 +27,9 @@ export function SelectListItem<
     I extends SelectListItemType<P> = SelectListItemType<P>
 >(props: ISelectListItem<P, I>) {
     const {
+        maxWidthChar,
+        ellipsize,
+        halign,
         classes,
         onSelect
     } = props;
@@ -50,7 +57,15 @@ export function SelectListItem<
                 >
                     {item.icon}
 
-                    <ListItemBaseContent item={item} classes={classes} />
+                    <ListItemBaseContent
+                        item={{
+                            ...item,
+                            ellipsize: item.ellipsize ?? ellipsize,
+                            halign: item.halign ?? halign,
+                            maxWidthChar: item.maxWidthChar ?? maxWidthChar
+                        }}
+                        classes={classes}
+                    />
 
                     <With value={toAccessor(item.isActive)}>
                         {(isActive: boolean | undefined) => typeof isActive === 'boolean' ? (

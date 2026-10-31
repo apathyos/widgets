@@ -8,6 +8,11 @@ import {
     NetworkDevice,
     NetworkRemoteConnection
 } from '../../types/system';
+import NM from 'gi://NM?version=1.0';
+import { getErrorLog } from '@/utils/log';
+import { NETWORK_PREFIX } from '@/constants/log';
+
+const logError = getErrorLog({ prefix: NETWORK_PREFIX });
 
 export abstract class Network extends SystemComponent {
     constructor(protected NetworkService: AstalNetwork.Network) {
@@ -45,11 +50,11 @@ export abstract class Network extends SystemComponent {
     }
 
     getIsRemoteConnection(connection: NetworkConnection): connection is NetworkRemoteConnection {
-        return 'need_secrets' in connection;
+        return connection instanceof NM.RemoteConnection;
     }
 
     getIsAccessPoint(connection: NetworkConnection): connection is NetworkAccessPoint {
-        return 'strength' in connection;
+        return connection instanceof NM.AccessPoint;
     }
 
     protected async toggleConnection(args: {
@@ -75,16 +80,16 @@ export abstract class Network extends SystemComponent {
                         : client.add_and_activate_connection_async
                     ).bind(client);
 
+                    lastUsedProfile && this.configureConnectionBeforeConnect({ connection: lastUsedProfile });
+
                     activationMethod(
                         lastUsedProfile,
                         this.getDevice(),
-                        lastUsedProfile ? null : connection.get_path(),
+                        connection.get_path(),
                         null,
                         (_, res) => {
-                            try {
-                                client.activate_connection_finish(res);
-                                resolve();
-                            } catch { }
+                            client.activate_connection_finish(res);
+                            resolve();
                         }
                     );
                 } else {
@@ -100,7 +105,9 @@ export abstract class Network extends SystemComponent {
                     );
                 }
             });
-        } catch {}
+        } catch (e) {
+            logError(`Couldn't activate connection: `, e);
+        }
     }
 
     protected getClient() {
@@ -188,12 +195,25 @@ export abstract class Network extends SystemComponent {
     }): NetworkRemoteConnection | null {
         const { connection } = args;
 
-        return this.getConnectionProfiles({ connection }).sort(
+        const cons = this.getConnectionProfiles({ connection }).sort(
             (a, b) => (Network.getConnectionTimestamp(b) ?? Infinity) - (Network.getConnectionTimestamp(a) ?? Infinity)
-        )[0] ?? null;
+        );
+
+        return cons[0] ?? null;
     }
 
     static getConnectionTimestamp(connection: NetworkConnection) {
         return 'get_setting_connection' in connection ? connection.get_setting_connection().timestamp : null;
+    }
+
+    private configureConnectionBeforeConnect(args: {
+        connection: NetworkConnection;
+    }) {
+        const { connection } = args;
+
+        if (this.getIsRemoteConnection(connection)) {
+            const security = connection.get_setting_wireless_security();
+            security.set_secret_flags('psk', NM.SettingSecretFlags.NOT_SAVED);
+        }
     }
 }

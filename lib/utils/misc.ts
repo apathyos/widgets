@@ -6,6 +6,8 @@ import GLib from 'gi://GLib?version=2.0';
 import { isEqual } from 'lodash';
 
 export const getId = () => GLib.uuid_string_random();
+export const run = <R>(cb: () => R) => cb();
+export const noop = () => null;
 
 export const toMap = <T, K>(values: T[], getKey: (value: T) => K) => new Map(values.map(v => [getKey(v), v]));
 

@@ -1,8 +1,19 @@
+import { AP_FLAGS, SECURITY_FLAGS } from '@/constants/system';
 import { Icon } from '../../types/icon';
-import { NetworkActiveConnection, NetworkConnection, NetworkConnectionType } from '../../types/system';
+import {
+    NetworkActiveConnection,
+    NetworkConnection,
+    NetworkConnectionType,
+    NetworkRemoteConnectionSecurity
+} from '../../types/system';
 import { Network } from './Network';
+import AstalNetwork from 'gi://AstalNetwork?version=0.1';
 
 export class WifiNetwork extends Network {
+    constructor(protected NetworkService: AstalNetwork.Network) {
+        super(NetworkService);
+    }
+
     getDevice() {
         return this.NetworkService.wifi?.device ?? null;
     }
@@ -60,16 +71,22 @@ export class WifiNetwork extends Network {
         });
     }
 
-    getConnectionNeedSecrets(args: {
-        connection: NetworkConnection;
-    }) {
+    getRequiresPassword(args: { connection: NetworkConnection; }): boolean {
         const { connection } = args;
 
-        const isAccessPoint = this.getIsAccessPoint(connection);
+        const accessPoint = this.getConnectionAccessPoint({ connection });
 
-        return this.NetworkService.wifi?.accessPoints.find(
-            ap => isAccessPoint ? ap.get_bssid() === connection.get_bssid() : false
-        )?.requiresPassword ?? true;
+        if (!accessPoint) {
+            return false;
+        }
+
+        const security = WifiNetwork.getRemoteConnectionSecurity({ accessPoint });
+
+        return (
+            security === NetworkRemoteConnectionSecurity.WPA_PSK ||
+            security === NetworkRemoteConnectionSecurity.SAE ||
+            security === NetworkRemoteConnectionSecurity.WEP
+        );
     }
 
     getActiveConnections(): NetworkActiveConnection[] {
@@ -116,5 +133,69 @@ export class WifiNetwork extends Network {
             const recentConnection = this.getRecentConnection({ type: NetworkConnectionType.WIRELESS });
             recentConnection && await this.toggleConnection({ connection: recentConnection, value: true });
         }
+    }
+
+    private getConnectionAccessPoint(args: {
+        connection: NetworkConnection;
+    }) {
+        const { connection } = args;
+
+        const isAccessPoint = this.getIsAccessPoint(connection);
+
+        if (!isAccessPoint) {
+            return null;
+        }
+
+        return this.NetworkService.wifi?.accessPoints.find(ap => ap.get_bssid() === connection.get_bssid());
+    }
+
+    static getRemoteConnectionSecurity(args: {
+        accessPoint: AstalNetwork.AccessPoint,
+    }): NetworkRemoteConnectionSecurity {
+        const { accessPoint } = args;
+
+        const flags = accessPoint.get_flags();
+        const wpa = accessPoint.get_wpa_flags();
+        const rsn = accessPoint.get_rsn_flags();
+
+        const security = wpa | rsn;
+
+        if (
+            security &
+            (
+                SECURITY_FLAGS.KEY_MGMT_OWE |
+                SECURITY_FLAGS.KEY_MGMT_OWE_TM
+            )
+        ) {
+            return NetworkRemoteConnectionSecurity.OWE;
+        }
+
+        if (
+            security &
+            (
+                SECURITY_FLAGS.KEY_MGMT_802_1X |
+                SECURITY_FLAGS.KEY_MGMT_EAP_SUITE_B_192
+            )
+        ) {
+            return NetworkRemoteConnectionSecurity.ENTERPISE;
+        }
+
+        if (security & SECURITY_FLAGS.KEY_MGMT_SAE) {
+            return NetworkRemoteConnectionSecurity.SAE;
+        }
+
+        if (security & SECURITY_FLAGS.KEY_MGMT_PSK) {
+            return NetworkRemoteConnectionSecurity.WPA_PSK;
+        }
+
+        if (
+            (flags & AP_FLAGS.PRIVACY) &&
+            wpa === SECURITY_FLAGS.NONE &&
+            rsn === SECURITY_FLAGS.NONE
+        ) {
+            return NetworkRemoteConnectionSecurity.WEP;
+        }
+
+        return NetworkRemoteConnectionSecurity.OPEN;
     }
 }

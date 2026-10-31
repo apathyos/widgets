@@ -2,6 +2,7 @@ import GLib from 'gi://GLib';
 import { CpuProfile, GpuMode } from '../types/system';
 import { INotification, NotificationCategory } from '@/types/notification';
 import Notifd from 'gi://AstalNotifd?version=0.1';
+import NM from 'gi://NM?version=1.0';
 
 export const toGpuMode = (mode: string) => {
     switch (mode) {
@@ -68,4 +69,26 @@ export const getNotificationWeights = (notification: INotification) => {
     }
 
     return [1, urgencyWeights[notification.urgency], timestamp];
+};
+
+export const getConnectionFromVariant = (variant: GLib.Variant) => {
+    return NM.SimpleConnection.new_from_dbus(variant);
+};
+
+export const getConnectionSsidFromVariant = (variant: GLib.Variant) => {
+    const connection = getConnectionFromVariant(variant);
+    const wireless = connection.get_setting_wireless();
+    const security = connection.get_setting_wireless_security();
+
+    security?.set_secret_flags('psk', NM.SettingSecretFlags.NOT_SAVED);
+
+    const ssidBytes = wireless?.get_ssid();
+
+    const data = ssidBytes?.get_data();
+
+    if (!data) {
+        return null;
+    }
+
+    return NM.utils_ssid_to_utf8(data);
 };

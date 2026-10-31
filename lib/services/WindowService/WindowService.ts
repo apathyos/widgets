@@ -8,26 +8,31 @@ import {
 } from '../../types/windowing';
 import {
     AnyWindow,
+    AnyWindowCommand,
     WindowCommand,
     WindowControllerContext,
+    WindowControllerCreator,
     WindowDescriptor,
     WindowDone,
     WindowOpenCommand,
     WindowProxy,
-    WindowProxySignal
 } from '../../models/types/windowing';
 import { getId } from '../../utils/misc';
 import { Resolve } from '../../types/common';
+import { SignalRegistry } from '@/registry/SignalRegistry';
+import { SignalCallback } from '@/types/signal';
 
 export class WindowService {
     private handles = new Map<WindowId, { done: WindowDone; resolve: Resolve }>();
-    private signals = new Map<WindowId, WindowProxySignal<WindowType>[]>();
+    private readonly signalRegistry: SignalRegistry<AnyWindowCommand, WindowCommandResult>;
 
-    constructor(readonly registry: WindowRegistry) {}
+    constructor(readonly registry: WindowRegistry) {
+        this.signalRegistry = new SignalRegistry();
+    }
 
     open<T extends WindowType>(
         command: WindowOpenCommand<T>,
-        createController: (context: WindowControllerContext<T>) => WindowController<T>
+        createController: WindowControllerCreator<T>
     ): WindowProxy<T> {
         const { id = getId(), type, title, options, props } = command;
 
@@ -65,7 +70,7 @@ export class WindowService {
 
         const removed = this.registry.unregister(id);
         removed?.dispose();
-        this.signals.delete(id);
+        this.signalRegistry.clean(id);
 
         this.handles.get(id)?.resolve();
         this.handles.delete(id);
@@ -85,7 +90,7 @@ export class WindowService {
         }
 
         const result = await (model.controller as WindowController<T>).dispatch(command);
-        this.signals.get(id)?.forEach(signal => signal(command, result));
+        this.signalRegistry.emit(command, result, id);
 
         return result;
     }
@@ -115,13 +120,7 @@ export class WindowService {
             done,
             send: (command) => this.send(id, type, command),
             close: () => this.close(id),
-            signal: (cb) => {
-                this.signals.set(id, (this.signals.get(id) ?? []).concat(cb as WindowProxySignal<WindowType>));
-
-                return () => {
-                    this.signals.set(id, this.signals.get(id)?.filter(signal => signal !== cb) ?? []);
-                };
-            },
+            signal: (cb) => this.signalRegistry.register(cb as SignalCallback<AnyWindowCommand, WindowCommandResult>, id)
         };
 
         return proxy;

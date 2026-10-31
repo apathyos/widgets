@@ -15,6 +15,19 @@ export enum NetworkConnectionType {
     VPN = 'vpn'
 }
 
+export enum NetworkRemoteConnectionSecuritySettingsName {
+    WIRELESS_SECURITY_802_11 = '802-11-wireless-security'
+}
+
+export enum NetworkRemoteConnectionSecurity {
+    OPEN = 'open',
+    WEP = 'wep',
+    WPA_PSK = 'wpa-psk',
+    SAE = 'sae',
+    OWE = 'owe',
+    ENTERPISE = 'enterprise'
+}
+
 export enum GpuMode {
     INTEGRATED = 'integrated',
     HYBRID = 'hybrid',

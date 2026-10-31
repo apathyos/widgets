@@ -4,7 +4,7 @@ import { WindowCommandResult, WindowType } from '@/types/windowing';
 import { PolkitAuthAgent } from '@/models/Auth';
 import { InputModalCommand } from '@/models/Modal/types/windowing';
 
-export class AuthInputModalController extends InputModalController {
+export class PolkitAuthInputModalController extends InputModalController {
     constructor(
         protected readonly context: WindowControllerContext<WindowType.INPUT_MODAL>,
         protected readonly polkitAgent: PolkitAuthAgent

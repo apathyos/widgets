@@ -9,13 +9,13 @@ import {
     unpackAccessor,
     updateAccessor
 } from '../../utils/misc';
-import { getStringFromBytes } from '../../utils/strings'
-import { getStringList } from '../../utils/strings';
+import { getStringFromBytes } from '../../utils/strings';
 import cn from 'classnames';
 import { WifiNetwork } from '../../models/Network';
 import { timeout, Timer } from 'ags/time';
 import { Delay } from '../../types/common';
 import { isNonNullableAccessor } from '@/utils/typeguards';
+import NM from 'gi://NM?version=1.0';
 
 export interface IWifiDropdownButton extends Pick<IIconDropDownButton, 'isRootMounted' | 'hexpand'> {
     classes?: Classes<'root' | 'icon' | 'label'>;
@@ -51,9 +51,12 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
 
     const label = createComputed((get) => {
         const connections = get(activeConnections);
+        const activeConnection = connections[connections.length - 1];
 
         return get(isEnabled)
-            ? connections.length ? getStringList(connections, (item) => item.get_id()) : 'not connected'
+            ? activeConnection && activeConnection.state === NM.ActiveConnectionState.ACTIVATED
+                ? activeConnection.get_id()
+                : 'not connected'
             : 'off';
     });
 
@@ -87,6 +90,7 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
             }}
             onToggle={(isOpened) => {
                 if (isOpened) {
+                    wifi.toggleEnabled({ value: true });
                     wifi.enableScanning();
                     refresh();
 
@@ -110,7 +114,7 @@ export function WifiDropdownButton(props: IWifiDropdownButton) {
                     value: unpackAccessor(connection).bssid,
                     icon: (
                         <box class="wifi-dropdown-button__item-icon">
-                            <label label={connection(connection => wifi.getConnectionNeedSecrets({ connection }) ? '' : '')} />
+                            <label label={connection(connection => wifi.getRequiresPassword({ connection }) ? '' : '')} />
                         </box>
                     ),
                     isActive: connection(connection => wifi.getIsConnected() && wifi.getIsConnectionActive({ connection }))

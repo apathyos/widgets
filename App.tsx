@@ -7,12 +7,11 @@ import { WindowRegistry } from './lib/registry/WindowRegistry';
 import { WindowSystemContextProvider } from './lib/contexts/windowing/WindowSystemContext';
 import { AuthService } from './lib/services/AuthService';
 import { AuthPromptContextProvider } from './lib/contexts/system';
-import { PolkitAuthAgent } from '@/models/Auth/PolkitAuthAgent';
 
 function main(this: typeof app) {
-    const polkitAgent = new PolkitAuthAgent();
     const windowService = new WindowService(new WindowRegistry());
-    const authService = new AuthService(polkitAgent, windowService);
+    const authService = new AuthService(windowService);
+
     authService.register();
 
     this.connect('shutdown', () => {

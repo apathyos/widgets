@@ -7,12 +7,20 @@ export interface ISelectList<P = object, I extends SelectListItemType<P> = Selec
 }
 
 export function SelectList<P = object, I extends SelectListItemType<P> = SelectListItemType<P>>(props: ISelectList<P, I>) {
-    const { getItem, onSelect } = props;
+    const { getItem, onSelect, ellipsize, itemHalign, maxWidthChar } = props;
 
     return (
         <List
             {...props}
-            getItem={value => <SelectListItem item={getItem(value)} onSelect={onSelect} />}
+            getItem={value => (
+                <SelectListItem
+                    item={getItem(value)}
+                    onSelect={onSelect}
+                    ellipsize={ellipsize}
+                    halign={itemHalign}
+                    maxWidthChar={maxWidthChar}
+                />
+            )}
         />
     );
 }

@@ -1,28 +1,101 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import PolkitAgent from 'gi://PolkitAgent';
-import { AuthAgentCommand, AuthAgentSignal, AuthCommand } from '../types/auth';
+import { PolkitAgentCommand, PolkitAuthAgentSignal, PolkitAuthCommand } from '../types/auth';
 import { Dispose, Reject, Resolve } from '@/types/common';
-import { CANCELLED_ERROR, FAILED_ERROR } from '@/constants/auth';
+import {
+    POLKIT_AGENT_PATH,
+    POLKIT_AUTHORITY_INTERFACE,
+    POLKIT_AUTHORITY_NAME,
+    POLKIT_AUTHORITY_PATH,
+    POLKIT_CANCELLED_ERROR,
+    POLKIT_FAILED_ERROR
+} from '@/constants/auth';
 import { AuthError } from '@/errors';
 import { choosePolkitIdentity } from '@/utils/auth';
-import { ActiveAuthRequest, AuthAgentSessionSignal, BeginAuthParameters } from '@/types/auth';
+import {
+    PolkitActiveAuthRequest,
+    PolkitAgentBusMethod,
+    PolkitAgentBusMethodSignature,
+    PolkitAgentSessionSignal,
+    PolkitAgentSignatureByMethod,
+    PolkitBeginAuthParameters,
+    PolkitIdentity,
+    PolkitIdentityDetailsEntry,
+    PolkitIdentityKind
+} from '@/types/auth';
 import { getMessageFromError } from '@/utils/error';
+import { Bus } from '../base/Bus';
+import { getSystemLocale, getXDGSessionId } from '@/utils/system';
+import { POLKIT_AGENT_XML } from '@/config/dbus/auth';
+import { SignalRegistry } from '@/registry/SignalRegistry';
+import { AuthAgent } from '../base/AuthAgent';
 
-export class PolkitAuthAgent {
-    private active: ActiveAuthRequest | null = null;
+export class PolkitAuthAgent extends AuthAgent {
+    private readonly bus: Bus<PolkitAgentSignatureByMethod>;
+    private readonly signalRegistry: SignalRegistry<PolkitAgentCommand>;
+
+    private exportedObject: Gio.DBusExportedObject | null = null;
+    private subject: PolkitIdentity | null = null;
+
+    private active: PolkitActiveAuthRequest | null = null;
     private session: PolkitAgent.Session | null = null;
-    private signals: AuthAgentSignal[] = [];
     private requestResolve: Resolve | null = null;
     private requestReject: Reject | null = null;
 
+    constructor() {
+        super();
+
+        this.bus = new Bus(
+            Gio.DBus.system,
+            POLKIT_AUTHORITY_NAME,
+            POLKIT_AUTHORITY_PATH,
+            POLKIT_AUTHORITY_INTERFACE,
+        );
+
+        this.signalRegistry = new SignalRegistry();
+    }
+
+    async register() {
+        if (this.exportedObject) {
+            throw new Error('Polkit agent is already registered');
+        }
+
+        const sessionId = getXDGSessionId();
+
+        this.subject = [PolkitIdentityKind.UNIX_SESSION, {
+            [PolkitIdentityDetailsEntry.SESSION_ID]: new GLib.Variant('s', sessionId)
+        }];
+        this.exportedObject = Gio.DBusExportedObject.wrapJSObject(POLKIT_AGENT_XML, this);
+        this.exportedObject.export(this.bus.connection, POLKIT_AGENT_PATH);
+
+        try {
+            this.callRegisterAuthAgentBusMethod();
+        } catch (error) {
+            this.resetSession();
+            throw error;
+        }
+    }
+
+    async unregister() {
+        this.stop();
+
+        try {
+            this.callUnregisterAuthAgentBusMethod();
+        } catch (error) {
+            console.error('Could not unregister Polkit agent:', error);
+        }
+
+        this.resetAgent();
+    }
+
     BeginAuthenticationAsync(
-        parameters: BeginAuthParameters,
+        parameters: PolkitBeginAuthParameters,
         invocation: Gio.DBusMethodInvocation,
         _fdList: Gio.UnixFDList | null,
     ) {
         if (this.active) {
-            invocation.return_dbus_error(FAILED_ERROR, 'Another authentication request is active');
+            invocation.return_dbus_error(POLKIT_FAILED_ERROR, 'Another authentication request is active');
             return;
         }
 
@@ -32,11 +105,11 @@ export class PolkitAuthAgent {
             const identity = choosePolkitIdentity(identities);
             this.active = { actionId, message, cookie, identity, invocation };
 
-            this.emitCommand({ type: AuthCommand.START_SESSION });
+            this.emitCommand({ type: PolkitAuthCommand.START_SESSION });
             this.startSession();
         } catch (error) {
-            invocation.return_dbus_error(FAILED_ERROR, getMessageFromError(error));
-            this.reset();
+            invocation.return_dbus_error(POLKIT_FAILED_ERROR, getMessageFromError(error));
+            this.resetSession();
         }
     }
 
@@ -48,12 +121,8 @@ export class PolkitAuthAgent {
         this.cancel('Authentication was cancelled by Polkit');
     }
 
-    signal(cb: AuthAgentSignal): Dispose {
-        this.signals.push(cb);
-
-        return () => {
-            this.signals = this.signals.filter(signal => signal !== cb);
-        };
+    signal(cb: PolkitAuthAgentSignal): Dispose {
+        return this.signalRegistry.register(cb);
     }
 
     respond(response: string) {
@@ -87,23 +156,23 @@ export class PolkitAuthAgent {
 
         this.session = session;
 
-        session.connect(AuthAgentSessionSignal.SHOW_INFO, (_session, message: string) => {
+        session.connect(PolkitAgentSessionSignal.SHOW_INFO, (_session, message: string) => {
             if (this.session !== session) {
                 return;
             }
 
-            this.emitCommand({ type: AuthCommand.SHOW_INFO, message });
+            this.emitCommand({ type: PolkitAuthCommand.SHOW_INFO, message });
         });
 
-        session.connect(AuthAgentSessionSignal.SHOW_ERROR, (_session, message: string) => {
+        session.connect(PolkitAgentSessionSignal.SHOW_ERROR, (_session, message: string) => {
             if (this.session !== session) {
                 return;
             }
 
-            this.emitCommand({ type: AuthCommand.SHOW_ERROR, message });
+            this.emitCommand({ type: PolkitAuthCommand.SHOW_ERROR, message });
         });
 
-        session.connect(AuthAgentSessionSignal.COMPLETED, (_session, authorized: boolean) => {
+        session.connect(PolkitAgentSessionSignal.COMPLETED, (_session, authorized: boolean) => {
             if (this.session !== session) {
                 return;
             }
@@ -132,7 +201,7 @@ export class PolkitAuthAgent {
 
         request.invocation.return_value(new GLib.Variant('()', []));
 
-        this.reset();
+        this.resetSession();
     }
 
     private cancel(message: string) {
@@ -146,18 +215,55 @@ export class PolkitAuthAgent {
         this.session = null;
         session?.cancel();
 
-        request?.invocation.return_dbus_error(CANCELLED_ERROR, message);
-        this.reset();
+        request?.invocation.return_dbus_error(POLKIT_CANCELLED_ERROR, message);
+        this.resetSession();
     }
 
-    private reset() {
+    private resetSession() {
         this.session = null;
         this.active = null;
         this.requestResolve = null;
         this.requestReject = null;
     }
 
-    private emitCommand(command: AuthAgentCommand) {
-        this.signals.forEach(cb => cb(command));
+    private resetAgent() {
+        this.exportedObject?.unexport();
+        this.exportedObject = null;
+        this.subject = null;
+    }
+
+    private emitCommand(command: PolkitAgentCommand) {
+        this.signalRegistry.emit(command);
+    }
+
+    private callRegisterAuthAgentBusMethod() {
+        if (!this.subject) {
+            throw new Error('No subject for the agent');
+        }
+
+        const locale = getSystemLocale();
+
+        this.bus.call({
+            method: PolkitAgentBusMethod.RegisterAuthenticationAgent,
+            parameters: new GLib.Variant(PolkitAgentBusMethodSignature.RegisterAuthenticationAgent, [
+                this.subject,
+                locale,
+                POLKIT_AGENT_PATH,
+            ])
+        }, { sync: true });
+    }
+
+    private callUnregisterAuthAgentBusMethod() {
+        if (!this.subject) {
+            throw new Error('No subject for the agent');
+        }
+
+        this.bus.call({
+            method: PolkitAgentBusMethod.UnregisterAuthenticationAgent,
+            parameters: new GLib.Variant(PolkitAgentBusMethodSignature.UnregisterAuthenticationAgent, [
+                this.subject,
+                POLKIT_AGENT_PATH,
+            ])
+        }, { sync: true });
     }
 }

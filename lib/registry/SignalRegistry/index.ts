@@ -1,0 +1,1 @@
+export { SignalRegistry } from './SignalRegistry';
