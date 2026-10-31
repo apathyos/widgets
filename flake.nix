@@ -1,128 +1,129 @@
 {
-  description = "Collection of widgets for apathyos desktop environment";
+    description = "Collection of widgets for apathyos desktop environment";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    inputs = {
+        nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    astal = {
-      url = "github:Aylur/astal";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    ags = {
-      url = "github:Aylur/ags";
-      inputs.astal.follows = "astal";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-
-  outputs = {
-    self,
-    nixpkgs,
-    ags,
-    ...
-  }: let
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-    lib = pkgs.lib;
-
-    basePackage = lib.importJSON ./package.json;
-    pname = basePackage.name;
-    pversion = basePackage.version;
-    entry = basePackage.exports.default;
-
-    source = pkgs.lib.cleanSource ./.;
-    agsPkg = ags.packages.${system}.default;
-
-    # pkexec shim for correct work in dev shell
-    pkexecShim = pkgs.writeShellScriptBin "pkexec" ''
-        if [[ ! -x /run/wrappers/bin/pkexec ]]; then
-          echo "NixOS pkexec wrapper is unavailable" >&2
-          exit 127
-        fi
-
-        exec /run/wrappers/bin/pkexec "$@"
-      '';
-
-    astalPackages = with ags.packages.${system}; [
-      io
-      astal4
-      apps
-      battery
-      mpris
-      notifd
-      bluetooth
-      network
-      wireplumber
-    ];
-
-    runtimePackages =
-      astalPackages
-      ++ [
-        pkgs.gjs
-        pkgs.libadwaita
-        pkgs.libsoup_3
-        pkgs.glib-networking
-        pkgs.polkit.out
-      ];
-
-    agsCli = ags.packages.${system}.default;
-
-    agsDev = agsCli.override {
-      extraPackages = runtimePackages;
-    };
-  in {
-    packages.${system} = {
-      default = pkgs.buildNpmPackage {
-        inherit pname pversion;
-
-        name = pname;
-        src = source;
-
-        npmDeps = pkgs.importNpmLock {
-          npmRoot = source;
+        astal = {
+            url = "github:Aylur/astal";
+            inputs.nixpkgs.follows = "nixpkgs";
         };
 
-        npmConfigHook = pkgs.importNpmLock.npmConfigHook;
-
-        dontNpmBuild = true;
-
-        nativeBuildInputs = [
-          pkgs.wrapGAppsHook3
-          pkgs.gobject-introspection
-          agsCli
-        ];
-
-        buildInputs = runtimePackages;
-
-        installPhase = ''
-          runHook preInstall
-
-          mkdir -p "$out/bin"
-
-          ags bundle ${entry} "$out/bin/${pname}"
-
-          runHook postInstall
-        '';
-
-        postFixup = ''
-          wrapProgram $out/bin/apathyos-widgets --run "${agsPkg}/bin/ags quit --instance apathyos || true"
-        '';
-      };
-
-      ags = ags.packages.${system}.default;
+        ags = {
+            url = "github:Aylur/ags";
+            inputs.astal.follows = "astal";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
 
-    devShells.${system}.default = pkgs.mkShell {
-      packages = [
-        agsDev
-        pkexecShim
-        pkgs.glib
-        pkgs.pkg-config
-        pkgs.gobject-introspection
-        pkgs.nodejs
-        pkgs.typescript
-      ];
-    };
-  };
+    outputs =
+        {
+            self,
+            nixpkgs,
+            ags,
+            ...
+        }:
+        let
+            system = "x86_64-linux";
+            pkgs = nixpkgs.legacyPackages.${system};
+            lib = pkgs.lib;
+
+            basePackage = lib.importJSON ./package.json;
+            pname = basePackage.name;
+            pversion = basePackage.version;
+            entry = basePackage.exports.default;
+
+            source = pkgs.lib.cleanSource ./.;
+            agsPkg = ags.packages.${system}.default;
+
+            # pkexec shim for correct work in dev shell
+            pkexecShim = pkgs.writeShellScriptBin "pkexec" ''
+                if [[ ! -x /run/wrappers/bin/pkexec ]]; then
+                  echo "NixOS pkexec wrapper is unavailable" >&2
+                  exit 127
+                fi
+
+                exec /run/wrappers/bin/pkexec "$@"
+            '';
+
+            astalPackages = with ags.packages.${system}; [
+                io
+                astal4
+                apps
+                battery
+                mpris
+                notifd
+                bluetooth
+                network
+                wireplumber
+            ];
+
+            runtimePackages = astalPackages ++ [
+                pkgs.gjs
+                pkgs.libadwaita
+                pkgs.libsoup_3
+                pkgs.glib-networking
+                pkgs.polkit.out
+            ];
+
+            agsCli = ags.packages.${system}.default;
+
+            agsDev = agsCli.override {
+                extraPackages = runtimePackages;
+            };
+        in
+        {
+            packages.${system} = {
+                default = pkgs.buildNpmPackage {
+                    inherit pname pversion;
+
+                    name = pname;
+                    src = source;
+
+                    npmDeps = pkgs.importNpmLock {
+                        npmRoot = source;
+                    };
+
+                    npmConfigHook = pkgs.importNpmLock.npmConfigHook;
+
+                    dontNpmBuild = true;
+
+                    nativeBuildInputs = [
+                        pkgs.wrapGAppsHook3
+                        pkgs.gobject-introspection
+                        agsCli
+                    ];
+
+                    buildInputs = runtimePackages;
+
+                    installPhase = ''
+                        runHook preInstall
+
+                        mkdir -p "$out/bin"
+
+                        ags bundle ${entry} "$out/bin/${pname}"
+
+                        runHook postInstall
+                    '';
+
+                    postFixup = ''
+                        wrapProgram $out/bin/apathyos-widgets --run "${agsPkg}/bin/ags quit --instance apathyos || true"
+                    '';
+                };
+
+                ags = ags.packages.${system}.default;
+            };
+
+            devShells.${system}.default = pkgs.mkShell {
+                packages = [
+                    agsDev
+                    pkexecShim
+                    pkgs.glib
+                    pkgs.pkg-config
+                    pkgs.gobject-introspection
+                    pkgs.nodejs
+                    pkgs.typescript
+                ];
+            };
+        };
 }
